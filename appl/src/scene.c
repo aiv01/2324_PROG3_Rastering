@@ -1,46 +1,46 @@
 #include "scene.h"
 #include "SDL.h"
 #include <math.h>
-
-
-/// @brief rasterize a line from p1 (x1,y2) to p2 (x2,y2)
-void dda_line_raster(SDL_Renderer* r, int x1, int y1, int x2, int y2) 
-{
-    int dx = abs(x2 - x1);
-    int dy = abs(y2 - y1);
-
-    int steps = (dx > dy) ? dx : dy;
-
-    int sx = (x1 > x2) ? -1 : 1;
-    int sy = (y1 > y2) ? -1 : 1;
-
-    float step_x = (float)dx * (float)sx / (float)steps;
-    float step_y = (float)dy * (float)sy / (float)steps;
-
-    int x = x1;
-    int y = y1;
-    for (int i = 0; i < steps; i++)
-    {
-        SDL_SetRenderDrawColor(r, 255, 0, 0, 255);
-        SDL_RenderDrawPoint(r, x, y);
-
-        x += step_x;
-        y += step_y;
-    }
-    
-}
-
-static SDL_Renderer* renderer;
+#include <stdlib.h>
+#include "color.h"
+#include "line_raster.h"
 
 scene_t* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
-    renderer = r;
-    return NULL;
+    scene_t* scene = (scene_t*)malloc(sizeof(scene_t));
+    scene->screen = screen_new(screen_width, screen_height, r);
+    return scene;
 }
 
 void scene_update(scene_t* s, float delta_time) {
-    dda_line_raster(renderer, 0, 0, 100, 100);
+
+    screen_clear(s->screen);
+
+    color_t yellow = {255, 255, 0, 255};
+
+    dda_line_raster(s->screen, 0, 0, 100, 100, yellow);
+
+    static float x1 = 0;
+    static float y1 = 0;
+    static float x2 = 100;
+    static float y2 = 100;
+
+    dda_line_raster(s->screen, (float)x1, (float)y1, (float)x2, (float)y2, yellow);
+
+    x1 += delta_time * 10.f;
+    y1 += delta_time * 10.f;
+    x2 += delta_time * 10.f;
+    y2 += delta_time * 10.f;
+
+
+    //Draw Triangle Edges
+    dda_line_raster(s->screen, 100, 400, 200, 100, yellow); //Left
+    dda_line_raster(s->screen, 300, 400, 200, 100, yellow); //Right
+    dda_line_raster(s->screen, 100, 400, 300, 400, yellow); //Base
+
+    screen_blit(s->screen);
 }
 
 void scene_destroy(scene_t* s) {
-    
+    screen_free(s->screen);
+    free(s);
 }
