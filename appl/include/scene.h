@@ -1,9 +1,11 @@
 #ifndef SCENE_H
 #define SCENE_H
 #include "SDL.h"
+#include "screen.h"
 
-typedef struct {
-    int todo;
+typedef struct scene_t
+{
+    screen_t* screen;
 } scene_t;
 
 scene_t* scene_create(int w, int h, SDL_Renderer*);
