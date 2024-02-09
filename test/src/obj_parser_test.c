@@ -1,10 +1,9 @@
-#define CLOVE_SUITE_NAME TestTry
+#define CLOVE_SUITE_NAME ObjParserTest
 #include "clove-unit.h"
 #include "obj_parser.h"
 
 CLOVE_TEST(ReadQuadObj)
 {
-
    char *file_name = "bin\\test\\resources\\quad.obj";
    obj_t *obj = obj_parse(file_name);
 
@@ -76,4 +75,16 @@ CLOVE_TEST(ReadQuadObj)
    CLOVE_INT_EQ(1, obj->v_info[5].v_index);
    CLOVE_INT_EQ(2, obj->v_info[5].vt_index);
    CLOVE_INT_EQ(1, obj->v_info[5].vn_index);
+}
+
+CLOVE_TEST(CheckSuzanneCounts)
+{
+   char *file_name = "bin\\test\\resources\\suzanne.obj";
+   obj_t *obj = obj_parse(file_name);
+
+   CLOVE_NOT_NULL(obj);
+   CLOVE_INT_EQ(511, obj->v_count);
+   CLOVE_INT_EQ(590, obj->vt_count);
+   CLOVE_INT_EQ(507, obj->vn_count);
+   CLOVE_INT_EQ(968, obj->f_count);
 }
