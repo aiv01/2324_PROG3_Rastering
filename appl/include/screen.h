@@ -3,20 +3,20 @@
 #include "SDL.h"
 #include "color.h"
 
-typedef struct screen_t
-{
-    unsigned int width;
-    unsigned int height;
-    unsigned int channel_amount;
-    unsigned int color_buffer_size;
+typedef struct screen_t {
+    int width;
+    int height;
+    int channels;
     unsigned char* color_buffer;
-    SDL_Renderer* renderer;
+    size_t color_buffer_size;
     SDL_Texture* texture;
+    SDL_Renderer* renderer;
 } screen_t;
 
-screen_t* screen_new(const unsigned int screen_width, const unsigned int screen_height, SDL_Renderer* renderer);
+
+screen_t* screen_new(int width, int height, SDL_Renderer* renderer);
 void screen_free(screen_t* screen);
-void screen_put_pixel(screen_t* screen, const unsigned int x, const unsigned int y, color_t* color);
+void screen_put_pixel(screen_t* screen, int x, int y, color_t color);
 void screen_blit(screen_t* screen);
 void screen_clear(screen_t* screen);
 

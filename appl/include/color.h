@@ -1,8 +1,6 @@
 #ifndef COLOR_H
 #define COLOR_H
-
-typedef struct color_t
-{
+typedef struct color_t {
     unsigned char r;
     unsigned char g;
     unsigned char b;
