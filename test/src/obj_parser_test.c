@@ -50,7 +50,7 @@ CLOVE_TEST(ReadQuadObj)
 
    // faces tests
 
-   //face 1
+   // face 1
    CLOVE_INT_EQ(4, obj->v_info[0].v_index);
    CLOVE_INT_EQ(4, obj->v_info[0].vt_index);
    CLOVE_INT_EQ(1, obj->v_info[0].vn_index);
@@ -63,7 +63,7 @@ CLOVE_TEST(ReadQuadObj)
    CLOVE_INT_EQ(2, obj->v_info[2].vt_index);
    CLOVE_INT_EQ(1, obj->v_info[2].vn_index);
 
-   //face 2
+   // face 2
    CLOVE_INT_EQ(2, obj->v_info[3].v_index);
    CLOVE_INT_EQ(1, obj->v_info[3].vt_index);
    CLOVE_INT_EQ(1, obj->v_info[3].vn_index);
@@ -75,6 +75,34 @@ CLOVE_TEST(ReadQuadObj)
    CLOVE_INT_EQ(1, obj->v_info[5].v_index);
    CLOVE_INT_EQ(2, obj->v_info[5].vt_index);
    CLOVE_INT_EQ(1, obj->v_info[5].vn_index);
+
+   // triangles check
+   // triangle position 01
+   CLOVE_INT_EQ(2, obj->triangle_count);
+   CLOVE_FLOAT_EQ(1.f, obj->triangles[0].v1.position.x);
+   CLOVE_FLOAT_EQ(-1.f, obj->triangles[0].v1.position.y);
+   CLOVE_FLOAT_EQ(0.f, obj->triangles[0].v1.position.z);
+
+   CLOVE_FLOAT_EQ(-1.f, obj->triangles[0].v2.position.x);
+   CLOVE_FLOAT_EQ(-1.f, obj->triangles[0].v2.position.y);
+   CLOVE_FLOAT_EQ(0.f, obj->triangles[0].v2.position.z);
+
+   CLOVE_FLOAT_EQ(-1.f, obj->triangles[0].v3.position.x);
+   CLOVE_FLOAT_EQ(1.f, obj->triangles[0].v3.position.y);
+   CLOVE_FLOAT_EQ(0.f, obj->triangles[0].v3.position.z);
+
+   // triangle position 02
+   CLOVE_FLOAT_EQ(1.f, obj->triangles[1].v1.position.x);
+   CLOVE_FLOAT_EQ(1.f, obj->triangles[1].v1.position.y);
+   CLOVE_FLOAT_EQ(0.f, obj->triangles[1].v1.position.z);
+
+   CLOVE_FLOAT_EQ(1.f, obj->triangles[1].v2.position.x);
+   CLOVE_FLOAT_EQ(-1.f, obj->triangles[1].v2.position.y);
+   CLOVE_FLOAT_EQ(0.f, obj->triangles[1].v2.position.z);
+
+   CLOVE_FLOAT_EQ(-1.f, obj->triangles[1].v3.position.x);
+   CLOVE_FLOAT_EQ(1.f, obj->triangles[1].v3.position.y);
+   CLOVE_FLOAT_EQ(0.f, obj->triangles[1].v3.position.z);
 }
 
 CLOVE_TEST(CheckSuzanneCounts)

@@ -25,17 +25,32 @@ typedef struct obj_float2_t
     float y;
 } obj_float2_t;
 
+typedef struct obj_vertex_t
+{
+    obj_float3_t position; // alias 'v'
+    obj_float3_t normal;   // alias 'vn'
+    obj_float2_t uv;       // alias 'vt'
+} obj_vertex_t;
+
+typedef struct obj_triangle_t
+{
+    obj_vertex_t v1;
+    obj_vertex_t v2;
+    obj_vertex_t v3;
+} obj_triangle_t;
+
 typedef struct obj_t
 {
     int v_count;
     int vt_count;
     int vn_count;
     int f_count;
+    int triangle_count;
     obj_float3_t *v;
     obj_float2_t *vt;
     obj_float3_t *vn;
     obj_vertex_info_t *v_info;
-
+    obj_triangle_t *triangles;
 } obj_t;
 
 obj_t *obj_parse(const char *file_name)
@@ -171,6 +186,25 @@ obj_t *obj_parse(const char *file_name)
 
             f_index += 3;
         }
+    }
+
+    obj->triangle_count = f_index / 3;
+
+    obj->triangles = (obj_triangle_t *)malloc(obj->triangle_count * sizeof(obj_triangle_t));
+
+    for (int i = 0; i < obj->triangle_count; i++)
+    {
+        obj->triangles[i].v1.position = obj->v[obj->v_info[i * 3].v_index - 1];
+        obj->triangles[i].v1.uv = obj->vt[obj->v_info[i * 3].vt_index - 1];
+        obj->triangles[i].v1.normal = obj->vn[obj->v_info[i * 3].vn_index - 1];
+
+        obj->triangles[i].v2.position = obj->v[obj->v_info[(i * 3) + 1].v_index - 1];
+        obj->triangles[i].v2.uv = obj->vt[obj->v_info[(i * 3) + 1].vt_index - 1];
+        obj->triangles[i].v2.normal = obj->vn[obj->v_info[(i * 3) + 1].vn_index - 1];
+
+        obj->triangles[i].v3.position = obj->v[obj->v_info[(i * 3) + 2].v_index - 1];
+        obj->triangles[i].v3.uv = obj->vt[obj->v_info[(i * 3) + 2].vt_index - 1];
+        obj->triangles[i].v3.normal = obj->vn[obj->v_info[(i * 3) + 2].vn_index - 1];
     }
 
     fclose(file);
