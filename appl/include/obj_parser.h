@@ -45,11 +45,13 @@ typedef struct
     int vt_count;
     int vn_count;
     int f_count;
+    size_t triangle_count;
     obj_float3_t *v;
     obj_float2_t *vt;
     obj_float3_t *vn;
     obj_vertex_info_t *v_info;
     obj_triangle_t *triangles;
+
 } obj_t;
 
 obj_t *obj_parser(const char *file_name)
@@ -105,6 +107,7 @@ obj_t *obj_parser(const char *file_name)
     int vt_index = 0;
     int vn_index = 0;
     int f_index = 0;
+    size_t triangle_count = 0;
 
     while (fgets(buffer, sizeof(buffer), file))
     {
@@ -188,11 +191,14 @@ obj_t *obj_parser(const char *file_name)
 
     fclose(file);
 
+    // Set triangle count
+    obj_parse->triangle_count = obj_parse->f_count;
+
     // Allocate triangles struct
-    obj_parse->triangles = (obj_triangle_t *)malloc(sizeof(obj_triangle_t) * obj_parse->f_count);
+    obj_parse->triangles = (obj_triangle_t *)malloc(sizeof(obj_triangle_t) * obj_parse->triangle_count);
 
     // Loop faces
-    for (size_t i = 0; i < obj_parse->f_count; i++)
+    for (size_t i = 0; i < obj_parse->triangle_count; i++)
     {
         // Set current face index for v_info
         int f_index = i * 3;
