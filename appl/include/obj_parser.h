@@ -1,6 +1,11 @@
 #ifndef OBJ_PARSER
 #define OBJ_PARSER
 
+#define POSITION_LABEL "v "
+#define NORMAL_LABEL "vn "
+#define UV_LABEL "vt "
+#define FACE_LABEL "f "
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,57 +30,283 @@ typedef struct obj_float2_t
     float y;
 } obj_float2_t;
 
+typedef struct obj_info_t
+{
+    obj_float3_t* position_dynamic_array;
+    size_t position_amount;
+    obj_float3_t* normal_dynamic_array;
+    size_t normal_amount;
+    obj_float2_t* uv_dynamic_array;
+    size_t uv_amount;
+} obj_info_t;
+
+typedef struct obj_vertex_t
+{
+  obj_float3_t position; // alias 'v'
+  obj_float3_t normal;   // alias 'vn'
+  obj_float2_t uv;       // alias 'vt'
+} obj_vertex_t;
+
+typedef struct obj_triangle_t
+{
+  obj_vertex_t v1;
+  obj_vertex_t v2;
+  obj_vertex_t v3;
+} obj_triangle_t;
+
 typedef struct obj_t
 {
     int v_count;
     int vt_count;
     int vn_count;
     int f_count;
-    obj_float3_t *v;
-    obj_float2_t *vt;
-    obj_float3_t *vn;
-    obj_vertex_info_t *v_info;
-
+    obj_float3_t* v;
+    obj_float2_t* vt;
+    obj_float3_t* vn;
+    obj_vertex_t* vertex_dynamic_array;
+    size_t vertex_amount;
+    obj_vertex_info_t* v_info;
+    obj_triangle_t* triangle_dynamic_array;
+    size_t triangle_amount;
 } obj_t;
 
-obj_t *obj_parse(const char *file_name)
+int obj_add_uv(obj_info_t* all_vertex_info, const obj_float2_t uv)
 {
-
-    obj_t *obj = (obj_t *)malloc(sizeof(obj_t));
-    obj->v_count = 0;
-    obj->vt_count = 0;
-    obj->vn_count = 0;
-    obj->f_count = 0;
-
-    FILE *file;
-    fopen_s(&file, file_name, "r");
-
-    if (file == NULL)
+    all_vertex_info->uv_dynamic_array = (obj_float2_t*)realloc(all_vertex_info->uv_dynamic_array, (all_vertex_info->uv_amount + 1) * sizeof(obj_float2_t));
+    if(!all_vertex_info->uv_dynamic_array)
     {
-        printf("ERROR READ FILE: %s\n", file_name);
+        return 1;
+    }
+
+    all_vertex_info->uv_dynamic_array[all_vertex_info->uv_amount] = uv;
+    all_vertex_info->uv_amount++;
+
+    return 0;
+}
+
+int obj_add_normal(obj_info_t* all_vertex_info, const obj_float3_t normal)
+{
+    all_vertex_info->normal_dynamic_array = (obj_float3_t*)realloc(all_vertex_info->normal_dynamic_array, (all_vertex_info->normal_amount + 1) * sizeof(obj_float3_t));
+    if(!all_vertex_info->normal_dynamic_array)
+    {
+        return 1;
+    }
+
+    all_vertex_info->normal_dynamic_array[all_vertex_info->normal_amount] = normal;
+    all_vertex_info->normal_amount++;
+
+    return 0;
+}
+
+int obj_add_position(obj_info_t* all_vertex_info, const obj_float3_t position)
+{
+    all_vertex_info->position_dynamic_array = (obj_float3_t*)realloc(all_vertex_info->position_dynamic_array, (all_vertex_info->position_amount + 1) * sizeof(obj_float3_t));
+    if(!all_vertex_info->position_dynamic_array)
+    {
+        return 1;
+    }
+
+    all_vertex_info->position_dynamic_array[all_vertex_info->position_amount] = position;
+    all_vertex_info->position_amount++;
+
+    return 0;
+}
+
+int obj_save_position_info(obj_info_t* all_vertex_info, char* buffer)
+{
+    char* remaining_tokens;
+    char* token;
+    obj_float3_t position;
+
+    strtok_s(buffer, " ", &remaining_tokens); //v token
+
+    token = strtok_s(NULL, " ", &remaining_tokens);
+    position.x = atof(token);
+
+    token = strtok_s(NULL, " ", &remaining_tokens);
+    position.y = atof(token);
+
+    token = strtok_s(NULL, " ", &remaining_tokens);
+    position.z = atof(token);
+
+    return obj_add_position(all_vertex_info, position);
+}
+
+int obj_save_normal_info(obj_info_t* all_vertex_info, char* buffer)
+{
+    char* remaining_tokens;
+    char* token;
+    obj_float3_t normal;
+
+    strtok_s(buffer, " ", &remaining_tokens); //vn token
+
+    token = strtok_s(NULL, " ", &remaining_tokens);
+    normal.x = atof(token);
+
+    token = strtok_s(NULL, " ", &remaining_tokens);
+    normal.y = atof(token);
+
+    token = strtok_s(NULL, " ", &remaining_tokens);
+    normal.z = atof(token);
+
+    return obj_add_normal(all_vertex_info, normal);
+}
+
+int obj_save_uv_info(obj_info_t* all_vertex_info, char* buffer)
+{
+    char* remaining_tokens;
+    char* token;
+    obj_float2_t uv;
+
+    strtok_s(buffer, " ", &remaining_tokens); //vt token
+
+    token = strtok_s(NULL, " ", &remaining_tokens);
+    uv.x = atof(token);
+
+    token = strtok_s(NULL, " ", &remaining_tokens);
+    uv.y = atof(token);
+
+    return obj_add_uv(all_vertex_info, uv);
+}
+
+obj_info_t* obj_all_vertex_info_new()
+{
+    obj_info_t* all_vertex_info = (obj_info_t*)malloc(sizeof(obj_info_t));
+
+    if(!all_vertex_info)
+    {
+        return NULL;
+    }
+
+    all_vertex_info->position_dynamic_array = NULL;
+    all_vertex_info->position_amount = 0;
+    all_vertex_info->normal_dynamic_array = NULL;
+    all_vertex_info->normal_amount = 0;
+    all_vertex_info->uv_dynamic_array = NULL;
+    all_vertex_info->uv_amount = 0;
+
+    return all_vertex_info;
+}
+
+void obj_all_vertex_info_free(obj_info_t* all_vertex_info)
+{
+    free(all_vertex_info->position_dynamic_array);
+    free(all_vertex_info->normal_dynamic_array);
+    free(all_vertex_info->uv_dynamic_array);
+
+    free(all_vertex_info);
+}
+
+FILE* obj_file_open(const char* file_name)
+{
+    FILE* file;
+    if(fopen_s(&file, file_name, "r"))
+    {
+        return NULL;
+    }
+
+    return file;
+}
+
+void obj_file_close(FILE* file)
+{
+    fclose(file);
+}
+
+int obj_add_vertex(obj_t* obj, const obj_vertex_t vertex)
+{
+    obj->vertex_dynamic_array = (obj_vertex_t*)realloc(obj->vertex_dynamic_array, (obj->vertex_amount + 1) * sizeof(obj_vertex_t));
+    if(!obj->vertex_dynamic_array)
+    {
+        return 1;
+    }
+
+    obj->vertex_dynamic_array[obj->vertex_amount] = vertex;
+    obj->vertex_amount++;
+
+    return 0;
+}
+
+obj_t* obj_new()
+{
+    obj_t* obj = (obj_t*)malloc(sizeof(obj_t));
+    if(!obj)
+    {
+        return NULL;
+    }
+
+    obj->vertex_dynamic_array = NULL;
+    obj->vertex_amount = 0;
+    obj->triangle_dynamic_array = NULL;
+    obj->triangle_amount = 0;
+
+    return obj;
+}
+
+void obj_free(obj_t* obj)
+{
+    free(obj->vertex_dynamic_array);
+    free(obj->triangle_dynamic_array);
+
+    free(obj);
+}
+
+obj_t* obj_parse(const char* file_name)
+{
+    obj_t* obj = obj_new(); //DEBUG
+
+    FILE* file = obj_file_open(file_name);
+    if(!file)
+    {
+        fprintf(stderr, "Error: Trying to open the file %s!\n", file_name);
+        return NULL;
+    }
+
+    obj_info_t* all_vertex_info = obj_all_vertex_info_new();
+    if(!all_vertex_info)
+    {
+        fprintf(stderr, "Error: Trying to allocate memory for all_vertex_info!\n");
+        obj_file_close(file);
         return NULL;
     }
 
     char buffer[1024];
-
-    while (fgets(buffer, sizeof(buffer), file))
+    while(fgets(buffer, sizeof(buffer), file))
     {
-        if (strncmp(buffer, "v ", 2) == 0)
+        if(strncmp(buffer, POSITION_LABEL, 2) == 0)
         {
-            obj->v_count++;
+            if(obj_save_position_info(all_vertex_info, buffer))
+            {
+                fprintf(stderr, "Error: Trying to save position inside all_vertex_info!\n");
+                obj_file_close(file);
+                obj_all_vertex_info_free(all_vertex_info);
+                return NULL;
+            }
         }
 
-        if (strncmp(buffer, "vt ", 3) == 0)
+        if(strncmp(buffer, UV_LABEL, 3) == 0)
         {
-            obj->vt_count++;
+            if(obj_save_uv_info(all_vertex_info, buffer))
+            {
+                fprintf(stderr, "Error: Trying to save uv inside all_vertex_info!\n");
+                obj_file_close(file);
+                obj_all_vertex_info_free(all_vertex_info);
+                return NULL;
+            }
         }
 
-        if (strncmp(buffer, "vn ", 3) == 0)
+        if(strncmp(buffer, NORMAL_LABEL, 3) == 0)
         {
-            obj->vn_count++;
+            if(obj_save_normal_info(all_vertex_info, buffer))
+            {
+                fprintf(stderr, "Error: Trying to save normal inside all_vertex_info!\n");
+                obj_file_close(file);
+                obj_all_vertex_info_free(all_vertex_info);
+                return NULL;
+            }
         }
 
-        if (strncmp(buffer, "f ", 2) == 0)
+        if(strncmp(buffer, FACE_LABEL, 2) == 0)
         {
             obj->f_count++;
         }
@@ -178,4 +409,4 @@ obj_t *obj_parse(const char *file_name)
     return obj;
 }
 
-#endif // end define OBJ_PARSER
+#endif //OBJ_PARSER
