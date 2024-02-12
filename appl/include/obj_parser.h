@@ -5,37 +5,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct obj_vertex_info_t
+typedef struct 
 {
     int v_index;
     int vt_index;
     int vn_index;
 } obj_vertex_info_t;
 
-typedef struct obj_float3_t
+typedef struct 
 {
     float x;
     float y;
     float z;
 } obj_float3_t;
 
-typedef struct obj_float2_t
+typedef struct 
 {
     float x;
     float y;
 } obj_float2_t;
-
-typedef struct obj_parse_t
-{
-    int v_count;
-    int vt_count;
-    int vn_count;
-    int f_count;
-    obj_float3_t *v;
-    obj_float2_t *vt;
-    obj_float3_t *vn;
-    obj_vertex_info_t *v_info;
-} obj_parse_t;
 
 typedef struct
 {
@@ -51,15 +39,22 @@ typedef struct
     obj_vertex_t v3;
 } obj_triangle_t;
 
-typedef struct
+typedef struct 
 {
+    int v_count;
+    int vt_count;
+    int vn_count;
+    int f_count;
+    obj_float3_t *v;
+    obj_float2_t *vt;
+    obj_float3_t *vn;
+    obj_vertex_info_t *v_info;
     obj_triangle_t *triangles;
-    size_t triangle_count;
 } obj_t;
 
-obj_parse_t *obj_parser(const char *file_name)
+obj_t *obj_parser(const char *file_name)
 {
-    obj_parse_t *obj_parse = (obj_parse_t *)malloc(sizeof(obj_parse_t));
+    obj_t *obj_parse = (obj_t *)malloc(sizeof(obj_t));
     obj_parse->v_count = 0;
     obj_parse->vt_count = 0;
     obj_parse->vn_count = 0;
@@ -193,22 +188,11 @@ obj_parse_t *obj_parser(const char *file_name)
 
     fclose(file);
 
-    return obj_parse;
-}
-
-obj_t *obj_ctor(obj_parse_t *obj_parse)
-{
-    // Allocata obj struct
-    obj_t *obj = (obj_t *)malloc(sizeof(obj_t));
-
-    // Init triangle count
-    obj->triangle_count = obj_parse->f_count;
-
     // Allocate triangles struct
-    obj->triangles = (obj_triangle_t *)malloc(sizeof(obj_triangle_t) * obj->triangle_count);
+    obj_parse->triangles = (obj_triangle_t *)malloc(sizeof(obj_triangle_t) * obj_parse->f_count);
 
     // Loop faces
-    for (size_t i = 0; i < obj->triangle_count; i++)
+    for (size_t i = 0; i < obj_parse->f_count; i++)
     {
         // Set current face index for v_info
         int f_index = i * 3;
@@ -219,18 +203,13 @@ obj_t *obj_ctor(obj_parse_t *obj_parse)
         int index_vn1 = obj_parse->v_info[f_index + 0].vn_index - 1;
 
         // Set position info for vertex 1
-        obj->triangles[i].v1.position.x = obj_parse->v[index_v1].x;
-        obj->triangles[i].v1.position.y = obj_parse->v[index_v1].y;
-        obj->triangles[i].v1.position.z = obj_parse->v[index_v1].z;
+        obj_parse->triangles[i].v1.position = obj_parse->v[index_v1];
 
         // Set uv info for vertex 1
-        obj->triangles[i].v1.uv.x = obj_parse->vt[index_vt1].x;
-        obj->triangles[i].v1.uv.y = obj_parse->vt[index_vt1].y;
+        obj_parse->triangles[i].v1.uv = obj_parse->vt[index_vt1];
 
         // Set normals info for vertex 1
-        obj->triangles[i].v1.normal.x = obj_parse->vn[index_vn1].x;
-        obj->triangles[i].v1.normal.y = obj_parse->vn[index_vn1].y;
-        obj->triangles[i].v1.normal.z = obj_parse->vn[index_vn1].z;
+        obj_parse->triangles[i].v1.normal = obj_parse->vn[index_vn1];
 
         // Set indexes for vertex 2
         int index_v2 = obj_parse->v_info[f_index + 1].v_index - 1;
@@ -238,18 +217,13 @@ obj_t *obj_ctor(obj_parse_t *obj_parse)
         int index_vn2 = obj_parse->v_info[f_index + 1].vn_index - 1;
 
         // Set position info for vertex 2
-        obj->triangles[i].v2.position.x = obj_parse->v[index_v2].x;
-        obj->triangles[i].v2.position.y = obj_parse->v[index_v2].y;
-        obj->triangles[i].v2.position.z = obj_parse->v[index_v2].z;
-        
+        obj_parse->triangles[i].v2.position = obj_parse->v[index_v2];
+
         // Set uv info for vertex 2
-        obj->triangles[i].v2.uv.x = obj_parse->vt[index_vt2].x;
-        obj->triangles[i].v2.uv.y = obj_parse->vt[index_vt2].y;
+        obj_parse->triangles[i].v2.uv = obj_parse->vt[index_vt2];
 
         // Set normals info for vertex 2
-        obj->triangles[i].v2.normal.x = obj_parse->vn[index_vn2].x;
-        obj->triangles[i].v2.normal.y = obj_parse->vn[index_vn2].y;
-        obj->triangles[i].v2.normal.z = obj_parse->vn[index_vn2].z;
+        obj_parse->triangles[i].v2.normal = obj_parse->vn[index_vn2];
 
         // Set indexes for vertex 3
         int index_v3 = obj_parse->v_info[f_index + 2].v_index - 1;
@@ -257,39 +231,26 @@ obj_t *obj_ctor(obj_parse_t *obj_parse)
         int index_vn3 = obj_parse->v_info[f_index + 2].vn_index - 1;
 
         // Set position info for vertex 3
-        obj->triangles[i].v3.position.x = obj_parse->v[index_v3].x;
-        obj->triangles[i].v3.position.y = obj_parse->v[index_v3].y;
-        obj->triangles[i].v3.position.z = obj_parse->v[index_v3].z;
+        obj_parse->triangles[i].v3.position = obj_parse->v[index_v3];
 
         // Set uv info for vertex 3
-        obj->triangles[i].v3.uv.x = obj_parse->vt[index_vt3].x;
-        obj->triangles[i].v3.uv.y = obj_parse->vt[index_vt3].y;
+        obj_parse->triangles[i].v3.uv = obj_parse->vt[index_vt3];
 
         // Set normals info for vertex 3
-        obj->triangles[i].v3.normal.x = obj_parse->vn[index_vn3].x;
-        obj->triangles[i].v3.normal.y = obj_parse->vn[index_vn3].y;
-        obj->triangles[i].v3.normal.z = obj_parse->vn[index_vn3].z;
+        obj_parse->triangles[i].v3.normal = obj_parse->vn[index_vn3];
     }
 
-    return obj;
+    return obj_parse;
 }
 
-void obj_parser_destroy(obj_t *obj_ctor, obj_parse_t *obj_parse)
+void obj_parser_destroy(obj_t *obj_parse)
 {
-    if (obj_parse != NULL)
-    {
-        free(obj_parse->v);
-        free(obj_parse->vt);
-        free(obj_parse->vn);
-        free(obj_parse->v_info);
-        free(obj_parse);
-    }
-
-    if (obj_ctor != NULL)
-    {
-        free(obj_ctor->triangles);
-        free(obj_ctor);
-    }
+    free(obj_parse->v);
+    free(obj_parse->vt);
+    free(obj_parse->vn);
+    free(obj_parse->v_info);
+    free(obj_parse->triangles);
+    free(obj_parse);
 }
 
 #endif // end define OBJ_PARSER

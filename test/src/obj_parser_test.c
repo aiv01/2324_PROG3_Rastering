@@ -5,7 +5,7 @@
 CLOVE_TEST(ReadQuadObj)
 {
    char *file_name = "bin\\test\\resources\\quad.obj";
-   obj_parse_t *obj_parse = obj_parser(file_name);
+   obj_t *obj_parse = obj_parser(file_name);
 
    CLOVE_NOT_NULL(obj_parse);
    CLOVE_INT_EQ(4, obj_parse->v_count);
@@ -87,7 +87,7 @@ CLOVE_TEST(ReadQuadObj)
 CLOVE_TEST(CheckSuzanneCounts)
 {
    char *file_name = "bin\\test\\resources\\suzanne.obj";
-   obj_parse_t *obj_parse = obj_parser(file_name);
+   obj_t *obj_parse = obj_parser(file_name);
 
    CLOVE_NOT_NULL(obj_parse);
    CLOVE_INT_EQ(511, obj_parse->v_count);
@@ -99,11 +99,8 @@ CLOVE_TEST(CheckSuzanneCounts)
 CLOVE_TEST(CheckObjCtor)
 {
    char *file_name = "bin\\test\\resources\\quad.obj";
-
-   obj_parse_t *obj_parse = obj_parser(file_name);
-   CLOVE_NOT_NULL(obj_parse);
-
-   obj_t *obj_quad = obj_ctor(obj_parse);
+   obj_t *obj_quad = obj_parser(file_name);
+   
    CLOVE_NOT_NULL(obj_quad);
 
    // Test: FACE 1
@@ -180,5 +177,5 @@ CLOVE_TEST(CheckObjCtor)
    CLOVE_FLOAT_EQ(0, obj_quad->triangles[1].v3.normal.y);
    CLOVE_FLOAT_EQ(1, obj_quad->triangles[1].v3.normal.z);
 
-   obj_parser_destroy(obj_quad, obj_parse);
+   obj_parser_destroy(obj_quad);
 }
