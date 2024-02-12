@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+/// @brief Structure to represent a 3D floating-point vector
 typedef struct obj_float3_t
 {
     float x;
@@ -22,12 +23,14 @@ typedef struct obj_float3_t
     float z;
 } obj_float3_t;
 
+/// @brief Structure to represent a 2D floating-point vector
 typedef struct obj_float2_t
 {
     float x;
     float y;
 } obj_float2_t;
 
+/// @brief Structure to represent a vertex with position, normal, and texture coordinates
 typedef struct obj_vertex_t
 {
   obj_float3_t position;
@@ -35,6 +38,7 @@ typedef struct obj_vertex_t
   obj_float2_t uv;
 } obj_vertex_t;
 
+/// @brief Structure to represent a triangle composed of three vertices
 typedef struct obj_triangle_t
 {
   obj_vertex_t v1;
@@ -42,6 +46,7 @@ typedef struct obj_triangle_t
   obj_vertex_t v3;
 } obj_triangle_t;
 
+/// @brief Structure to hold dynamic arrays of position, normal, texture coordinates, and vertex information
 typedef struct obj_info_t
 {
     obj_float3_t* position_dynamic_array;
@@ -54,12 +59,16 @@ typedef struct obj_info_t
     size_t vertex_amount;
 } obj_info_t;
 
+/// @brief Structure to hold dynamic arrays of triangles
 typedef struct obj_t
 {
     obj_triangle_t* triangle_dynamic_array;
     size_t triangle_amount;
 } obj_t;
 
+/// @brief Function to open an OBJ file for reading
+/// @param file_name Complete path of the file to read
+/// @return A pointer to the file
 FILE* obj_file_open(const char* file_name)
 {
     FILE* file;
@@ -71,11 +80,17 @@ FILE* obj_file_open(const char* file_name)
     return file;
 }
 
+/// @brief Function to close an open file
+/// @param file The file to be closed
 void obj_file_close(FILE* file)
 {
     fclose(file);
 }
 
+/// @brief Function to add a position to the dynamic array
+/// @param obj_info Structure containig all the obj info
+/// @param position Strcture containig the x, y, z component of the position to be added
+/// @return An error number, 0 if everything have been completed succesfully
 int obj_add_position(obj_info_t* obj_info, const obj_float3_t position)
 {
     obj_info->position_dynamic_array = (obj_float3_t*)realloc(obj_info->position_dynamic_array, (obj_info->position_amount + 1) * sizeof(obj_float3_t));
@@ -90,6 +105,10 @@ int obj_add_position(obj_info_t* obj_info, const obj_float3_t position)
     return 0;
 }
 
+/// @brief Function to add a UV coordinate to the dynamic array
+/// @param obj_info Structure containig all the obj info
+/// @param uv Strcture containig the x, y component of the uv to be added
+/// @return An error number, 0 if everything have been completed succesfully
 int obj_add_uv(obj_info_t* obj_info, const obj_float2_t uv)
 {
     obj_info->uv_dynamic_array = (obj_float2_t*)realloc(obj_info->uv_dynamic_array, (obj_info->uv_amount + 1) * sizeof(obj_float2_t));
@@ -104,6 +123,10 @@ int obj_add_uv(obj_info_t* obj_info, const obj_float2_t uv)
     return 0;
 }
 
+/// @brief Function to add a normal to the dynamic array
+/// @param obj_info Structure containig all the obj info
+/// @param normal Strcture containig the x, y, z component of the normal to be added
+/// @return An error number, 0 if everything have been completed succesfully
 int obj_add_normal(obj_info_t* obj_info, const obj_float3_t normal)
 {
     obj_info->normal_dynamic_array = (obj_float3_t*)realloc(obj_info->normal_dynamic_array, (obj_info->normal_amount + 1) * sizeof(obj_float3_t));
@@ -118,6 +141,10 @@ int obj_add_normal(obj_info_t* obj_info, const obj_float3_t normal)
     return 0;
 }
 
+/// @brief Function to add a vertex to the dynamic array
+/// @param obj_info Structure containig all the obj info
+/// @param vertex Structure to represent a vertex with position, normal, and texture coordinates to be added
+/// @return An error number, 0 if everything have been completed succesfully
 int obj_add_vertex(obj_info_t* obj_info, const obj_vertex_t vertex)
 {
     obj_info->vertex_dynamic_array = (obj_vertex_t*)realloc(obj_info->vertex_dynamic_array, (obj_info->vertex_amount + 1) * sizeof(obj_vertex_t));
@@ -132,6 +159,10 @@ int obj_add_vertex(obj_info_t* obj_info, const obj_vertex_t vertex)
     return 0;
 }
 
+/// @brief Function to save position information from a buffer into the obj_info structure
+/// @param obj_info Structure containig all the obj info
+/// @param buffer A buffer containing chars representing the obj file
+/// @return An error number, 0 if everything have been completed succesfully
 int obj_save_position_info(obj_info_t* obj_info, char* buffer)
 {
     char* remaining_tokens;
@@ -152,6 +183,10 @@ int obj_save_position_info(obj_info_t* obj_info, char* buffer)
     return obj_add_position(obj_info, position);
 }
 
+/// @brief Function to save uv information from a buffer into the obj_info structure
+/// @param obj_info Structure containig all the obj info
+/// @param buffer A buffer containing chars representing the obj file
+/// @return An error number, 0 if everything have been completed succesfully
 int obj_save_uv_info(obj_info_t* obj_info, char* buffer)
 {
     char* remaining_tokens;
@@ -169,6 +204,10 @@ int obj_save_uv_info(obj_info_t* obj_info, char* buffer)
     return obj_add_uv(obj_info, uv);
 }
 
+/// @brief Function to save normal information from a buffer into the obj_info structure
+/// @param obj_info Structure containig all the obj info
+/// @param buffer A buffer containing chars representing the obj file
+/// @return An error number, 0 if everything have been completed succesfully
 int obj_save_normal_info(obj_info_t* obj_info, char* buffer)
 {
     char* remaining_tokens;
@@ -189,6 +228,10 @@ int obj_save_normal_info(obj_info_t* obj_info, char* buffer)
     return obj_add_normal(obj_info, normal);
 }
 
+/// @brief Function to save vertex information from a buffer into the obj_info structure
+/// @param obj_info Structure containig all the obj info
+/// @param buffer A buffer containing chars representing the obj file
+/// @return An error number, 0 if everything have been completed succesfully
 int obj_save_vertex_info(obj_info_t* obj_info, char* buffer)
 {
     char *remaining_tokens;
@@ -218,6 +261,8 @@ int obj_save_vertex_info(obj_info_t* obj_info, char* buffer)
     return 0;
 }
 
+/// @brief Function to create a new obj_info and initialize its members
+/// @return A pointer to the obj_info structure
 obj_info_t* obj_info_new()
 {
     obj_info_t* obj_info = (obj_info_t*)malloc(sizeof(obj_info_t));
@@ -239,6 +284,8 @@ obj_info_t* obj_info_new()
     return obj_info;
 }
 
+/// @brief Function to free the memory allocated for an obj_info
+/// @param obj_info The obj_info structure to free
 void obj_info_free(obj_info_t* obj_info)
 {
     free(obj_info->position_dynamic_array);
@@ -249,6 +296,8 @@ void obj_info_free(obj_info_t* obj_info)
     free(obj_info);
 }
 
+/// @brief Function to create a new obj and initialize its members
+/// @return A pointer to the obj structure
 obj_t* obj_new()
 {
     obj_t* obj = (obj_t*)malloc(sizeof(obj_t));
@@ -263,6 +312,8 @@ obj_t* obj_new()
     return obj;
 }
 
+/// @brief Function to free the memory allocated for an obj
+/// @param obj The obj structure to free
 void obj_free(obj_t* obj)
 {
     free(obj->triangle_dynamic_array);
@@ -270,6 +321,9 @@ void obj_free(obj_t* obj)
     free(obj);
 }
 
+/// @brief Function to parse an OBJ file and populate an obj structure with triangle data
+/// @param file_name Complete path of the file to read
+/// @return A pointer to the obj structure
 obj_t* obj_parse(const char* file_name)
 {
     FILE* file = obj_file_open(file_name);

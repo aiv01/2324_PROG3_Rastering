@@ -21,10 +21,8 @@ CLOVE_TEST(ObjNew)
    obj_t* obj = obj_new();
    CLOVE_NOT_NULL(obj);
 
-   CLOVE_NULL(obj->vertex_dynamic_array);
    CLOVE_NULL(obj->triangle_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj->vertex_amount);
    CLOVE_INT_EQ(0, obj->triangle_amount);
 
    obj_free(obj);
