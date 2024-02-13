@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define TRIANGLE_VERTEX_COUNT 3
 
 typedef struct obj_vertex_info_t
 {
@@ -25,6 +26,20 @@ typedef struct obj_float2_t
     float y;
 } obj_float2_t;
 
+typedef struct obj_vertex_t
+{
+    obj_float3_t position; // alias 'v'
+    obj_float3_t normal;   // alias 'vn'
+    obj_float2_t uv;       // alias 'vt'
+} obj_vertex_t;
+
+typedef struct obj_triangle_t
+{
+    obj_vertex_t v1;
+    obj_vertex_t v2;
+    obj_vertex_t v3;
+} obj_triangle_t;
+
 typedef struct obj_t
 {
     int v_count;
@@ -35,7 +50,7 @@ typedef struct obj_t
     obj_float2_t *vt;
     obj_float3_t *vn;
     obj_vertex_info_t *v_info;
-
+    obj_triangle_t *triangles;
 } obj_t;
 
 obj_t *obj_parse(const char *file_name)
@@ -156,21 +171,42 @@ obj_t *obj_parse(const char *file_name)
 
             strtok_s(buffer, " ", &remaining_tokens); // f token
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < TRIANGLE_VERTEX_COUNT; i++)
             {
                 token = strtok_s(NULL, "/", &remaining_tokens);
 
-                obj->v_info[f_index + i].v_index = atoi(token);
+                obj->v_info[f_index + i].v_index = atoi(token) - 1;
 
                 token = strtok_s(NULL, "/", &remaining_tokens);
-                obj->v_info[f_index + i].vt_index = atoi(token);
+                obj->v_info[f_index + i].vt_index = atoi(token) - 1;
 
                 token = strtok_s(NULL, " ", &remaining_tokens);
-                obj->v_info[f_index + i].vn_index = atoi(token);
+                obj->v_info[f_index + i].vn_index = atoi(token) - 1;
             }
 
-            f_index += 3;
+            f_index += TRIANGLE_VERTEX_COUNT;
         }
+    }
+
+    obj->triangles = (obj_triangle_t *)malloc(obj->f_count * sizeof(obj_triangle_t));
+
+    for (int i = 0; i < obj->f_count; i++)
+    {
+        const obj_vertex_info_t v1_info = obj->v_info[i * TRIANGLE_VERTEX_COUNT];
+        const obj_vertex_info_t v2_info = obj->v_info[i * TRIANGLE_VERTEX_COUNT + 1];
+        const obj_vertex_info_t v3_info = obj->v_info[i * TRIANGLE_VERTEX_COUNT + 2];
+        
+        obj->triangles[i].v1.position = obj->v[v1_info.v_index];
+        obj->triangles[i].v1.uv = obj->vt[v1_info.vt_index];
+        obj->triangles[i].v1.normal = obj->vn[v1_info.vn_index];
+
+        obj->triangles[i].v2.position = obj->v[v2_info.v_index];
+        obj->triangles[i].v2.uv = obj->vt[v2_info.vt_index];
+        obj->triangles[i].v2.normal = obj->vn[v2_info.vn_index];
+
+        obj->triangles[i].v3.position = obj->v[v3_info.v_index];
+        obj->triangles[i].v3.uv = obj->vt[v3_info.vt_index];
+        obj->triangles[i].v3.normal = obj->vn[v3_info.vn_index];
     }
 
     fclose(file);
