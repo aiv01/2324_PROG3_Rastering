@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define TRIANGLE_VERTEX_COUNT 3
 
 typedef struct obj_vertex_info_t
 {
@@ -171,7 +172,7 @@ obj_t *obj_parse(const char *file_name)
 
             strtok_s(buffer, " ", &remaining_tokens); // f token
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < TRIANGLE_VERTEX_COUNT; i++)
             {
                 token = strtok_s(NULL, "/", &remaining_tokens);
 
@@ -184,11 +185,11 @@ obj_t *obj_parse(const char *file_name)
                 obj->v_info[f_index + i].vn_index = atoi(token);
             }
 
-            f_index += 3;
+            f_index += TRIANGLE_VERTEX_COUNT;
         }
     }
 
-    obj->triangle_count = f_index / 3;
+    obj->triangle_count = f_index / TRIANGLE_VERTEX_COUNT;
 
     obj->triangles = (obj_triangle_t *)malloc(obj->triangle_count * sizeof(obj_triangle_t));
 
