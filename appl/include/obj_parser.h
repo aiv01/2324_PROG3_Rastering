@@ -10,6 +10,7 @@
 #define FACE_LABEL "f "
 #define FACE_LABEL_CHAR_AMOUNT 2
 #define INFO_PER_FACE_AMOUNT 3
+#define VERTEX_PER_TRIANGLE 3
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -321,6 +322,39 @@ void obj_free(obj_t* obj)
     free(obj);
 }
 
+/// @brief Functiona to create a new triangle structure
+/// @param vertex1 The first vertex od the triangle
+/// @param vertex2 The second vertex od the triangle
+/// @param vertex3 The third vertex od the triangle
+/// @return A new triangle structure
+obj_triangle_t obj_triangle_new(obj_vertex_t vertex1, obj_vertex_t vertex2, obj_vertex_t vertex3)
+{
+    obj_triangle_t triangle;
+    triangle.v1 = vertex1;
+    triangle.v2 = vertex2;
+    triangle.v3 = vertex3;
+
+    return triangle;
+}
+
+/// @brief Function to add a triangle inside the obj triangle dynamic array
+/// @param obj A pointer to the obj structure
+/// @param triangle The triangle structure to be added
+/// @return An error number, 0 if everything have been completed succesfully
+int obj_add_triangle(obj_t* obj, obj_triangle_t triangle)
+{
+    obj->triangle_dynamic_array = (obj_triangle_t*)realloc(obj->triangle_dynamic_array, (obj->triangle_amount + 1) * sizeof(obj_triangle_t));
+    if(!obj->triangle_dynamic_array)
+    {
+        return 1;
+    }
+
+    obj->triangle_dynamic_array[obj->triangle_amount] = triangle;
+    obj->triangle_amount++;
+
+    return 0;
+}
+
 /// @brief Function to parse an OBJ file and populate an obj structure with triangle data
 /// @param file_name Complete path of the file to read
 /// @return A pointer to the obj structure
@@ -341,6 +375,15 @@ obj_t* obj_parse(const char* file_name)
         return NULL;
     }
 
+    obj_t* obj = obj_new();
+    if(!obj)
+    {
+        fprintf(stderr, "Error: Trying to allocate memory for obj!\n");
+        obj_file_close(file);
+        obj_info_free(obj_info);
+        return NULL;
+    }
+
     char buffer[1024];
     while(fgets(buffer, sizeof(buffer), file))
     {
@@ -351,6 +394,7 @@ obj_t* obj_parse(const char* file_name)
                 fprintf(stderr, "Error: Trying to save position inside obj_info!\n");
                 obj_file_close(file);
                 obj_info_free(obj_info);
+                obj_free(obj);
                 return NULL;
             }
         }
@@ -362,6 +406,7 @@ obj_t* obj_parse(const char* file_name)
                 fprintf(stderr, "Error: Trying to save uv inside obj_info!\n");
                 obj_file_close(file);
                 obj_info_free(obj_info);
+                obj_free(obj);
                 return NULL;
             }
         }
@@ -373,6 +418,7 @@ obj_t* obj_parse(const char* file_name)
                 fprintf(stderr, "Error: Trying to save normal inside obj_info!\n");
                 obj_file_close(file);
                 obj_info_free(obj_info);
+                obj_free(obj);
                 return NULL;
             }
         }
@@ -383,6 +429,7 @@ obj_t* obj_parse(const char* file_name)
             {
                 fprintf(stderr, "Error: Trying to save vertex inside obj_info!\n");
                 obj_info_free(obj_info);
+                obj_free(obj);
                 return NULL;
             }
         }
@@ -390,15 +437,19 @@ obj_t* obj_parse(const char* file_name)
 
     obj_file_close(file);
 
-    obj_t* obj = obj_new();
-    if(!obj)
+    for(int i = 0; i < obj_info->vertex_amount; i += VERTEX_PER_TRIANGLE)
     {
-        fprintf(stderr, "Error: Trying to allocate memory for obj!\n");
-        obj_info_free(obj_info);
-        return NULL;
+        obj_triangle_t triangle = obj_triangle_new(obj_info->vertex_dynamic_array[i], obj_info->vertex_dynamic_array[i + 1], obj_info->vertex_dynamic_array[i + 2]);
+        if(obj_add_triangle(obj, triangle))
+        {
+            fprintf(stderr, "Error: Trying to add triangle inside obj!\n");
+            obj_info_free(obj_info);
+            obj_free(obj);
+            return NULL;
+        }
     }
 
-    
+    obj_info_free(obj_info);
 
     return obj;
 }
