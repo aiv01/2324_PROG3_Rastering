@@ -194,17 +194,21 @@ obj_t *obj_parse(const char *file_name)
 
     for (int i = 0; i < obj->triangle_count; i++)
     {
-        obj->triangles[i].v1.position = obj->v[obj->v_info[i * 3].v_index - 1];
-        obj->triangles[i].v1.uv = obj->vt[obj->v_info[i * 3].vt_index - 1];
-        obj->triangles[i].v1.normal = obj->vn[obj->v_info[i * 3].vn_index - 1];
+        const obj_vertex_info_t v1_info = obj->v_info[i * 3];
+        const obj_vertex_info_t v2_info = obj->v_info[i * 3 + 1];
+        const obj_vertex_info_t v3_info = obj->v_info[i * 3 + 2];
+        
+        obj->triangles[i].v1.position = obj->v[v1_info.v_index - 1];
+        obj->triangles[i].v1.uv = obj->vt[v1_info.vt_index - 1];
+        obj->triangles[i].v1.normal = obj->vn[v1_info.vn_index - 1];
 
-        obj->triangles[i].v2.position = obj->v[obj->v_info[(i * 3) + 1].v_index - 1];
-        obj->triangles[i].v2.uv = obj->vt[obj->v_info[(i * 3) + 1].vt_index - 1];
-        obj->triangles[i].v2.normal = obj->vn[obj->v_info[(i * 3) + 1].vn_index - 1];
+        obj->triangles[i].v2.position = obj->v[v2_info.v_index - 1];
+        obj->triangles[i].v2.uv = obj->vt[v2_info.vt_index - 1];
+        obj->triangles[i].v2.normal = obj->vn[v2_info.vn_index - 1];
 
-        obj->triangles[i].v3.position = obj->v[obj->v_info[(i * 3) + 2].v_index - 1];
-        obj->triangles[i].v3.uv = obj->vt[obj->v_info[(i * 3) + 2].vt_index - 1];
-        obj->triangles[i].v3.normal = obj->vn[obj->v_info[(i * 3) + 2].vn_index - 1];
+        obj->triangles[i].v3.position = obj->v[v3_info.v_index - 1];
+        obj->triangles[i].v3.uv = obj->vt[v3_info.vt_index - 1];
+        obj->triangles[i].v3.normal = obj->vn[v3_info.vn_index - 1];
     }
 
     fclose(file);
