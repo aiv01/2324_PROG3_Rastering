@@ -176,13 +176,13 @@ obj_t *obj_parse(const char *file_name)
             {
                 token = strtok_s(NULL, "/", &remaining_tokens);
 
-                obj->v_info[f_index + i].v_index = atoi(token);
+                obj->v_info[f_index + i].v_index = atoi(token) - 1;
 
                 token = strtok_s(NULL, "/", &remaining_tokens);
-                obj->v_info[f_index + i].vt_index = atoi(token);
+                obj->v_info[f_index + i].vt_index = atoi(token) - 1;
 
                 token = strtok_s(NULL, " ", &remaining_tokens);
-                obj->v_info[f_index + i].vn_index = atoi(token);
+                obj->v_info[f_index + i].vn_index = atoi(token) - 1;
             }
 
             f_index += TRIANGLE_VERTEX_COUNT;
@@ -199,17 +199,17 @@ obj_t *obj_parse(const char *file_name)
         const obj_vertex_info_t v2_info = obj->v_info[i * 3 + 1];
         const obj_vertex_info_t v3_info = obj->v_info[i * 3 + 2];
         
-        obj->triangles[i].v1.position = obj->v[v1_info.v_index - 1];
-        obj->triangles[i].v1.uv = obj->vt[v1_info.vt_index - 1];
-        obj->triangles[i].v1.normal = obj->vn[v1_info.vn_index - 1];
+        obj->triangles[i].v1.position = obj->v[v1_info.v_index];
+        obj->triangles[i].v1.uv = obj->vt[v1_info.vt_index];
+        obj->triangles[i].v1.normal = obj->vn[v1_info.vn_index];
 
-        obj->triangles[i].v2.position = obj->v[v2_info.v_index - 1];
-        obj->triangles[i].v2.uv = obj->vt[v2_info.vt_index - 1];
-        obj->triangles[i].v2.normal = obj->vn[v2_info.vn_index - 1];
+        obj->triangles[i].v2.position = obj->v[v2_info.v_index];
+        obj->triangles[i].v2.uv = obj->vt[v2_info.vt_index];
+        obj->triangles[i].v2.normal = obj->vn[v2_info.vn_index];
 
-        obj->triangles[i].v3.position = obj->v[v3_info.v_index - 1];
-        obj->triangles[i].v3.uv = obj->vt[v3_info.vt_index - 1];
-        obj->triangles[i].v3.normal = obj->vn[v3_info.vn_index - 1];
+        obj->triangles[i].v3.position = obj->v[v3_info.v_index];
+        obj->triangles[i].v3.uv = obj->vt[v3_info.vt_index];
+        obj->triangles[i].v3.normal = obj->vn[v3_info.vn_index];
     }
 
     fclose(file);
