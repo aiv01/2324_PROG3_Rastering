@@ -46,7 +46,6 @@ typedef struct obj_t
     int vt_count;
     int vn_count;
     int f_count;
-    int triangle_count;
     obj_float3_t *v;
     obj_float2_t *vt;
     obj_float3_t *vn;
@@ -189,11 +188,9 @@ obj_t *obj_parse(const char *file_name)
         }
     }
 
-    obj->triangle_count = f_index / TRIANGLE_VERTEX_COUNT;
+    obj->triangles = (obj_triangle_t *)malloc(obj->f_count * sizeof(obj_triangle_t));
 
-    obj->triangles = (obj_triangle_t *)malloc(obj->triangle_count * sizeof(obj_triangle_t));
-
-    for (int i = 0; i < obj->triangle_count; i++)
+    for (int i = 0; i < obj->f_count; i++)
     {
         const obj_vertex_info_t v1_info = obj->v_info[i * 3];
         const obj_vertex_info_t v2_info = obj->v_info[i * 3 + 1];
