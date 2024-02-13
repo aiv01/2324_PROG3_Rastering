@@ -192,9 +192,9 @@ obj_t *obj_parse(const char *file_name)
 
     for (int i = 0; i < obj->f_count; i++)
     {
-        const obj_vertex_info_t v1_info = obj->v_info[i * 3];
-        const obj_vertex_info_t v2_info = obj->v_info[i * 3 + 1];
-        const obj_vertex_info_t v3_info = obj->v_info[i * 3 + 2];
+        const obj_vertex_info_t v1_info = obj->v_info[i * TRIANGLE_VERTEX_COUNT];
+        const obj_vertex_info_t v2_info = obj->v_info[i * TRIANGLE_VERTEX_COUNT + 1];
+        const obj_vertex_info_t v3_info = obj->v_info[i * TRIANGLE_VERTEX_COUNT + 2];
         
         obj->triangles[i].v1.position = obj->v[v1_info.v_index];
         obj->triangles[i].v1.uv = obj->vt[v1_info.vt_index];
