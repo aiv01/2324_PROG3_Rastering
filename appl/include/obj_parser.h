@@ -201,48 +201,36 @@ obj_t *obj_parser(const char *file_name)
     for (size_t i = 0; i < obj_parse->triangle_count; i++)
     {
         // Set current face index for v_info
-        int f_index = i * 3;
+        const int f_index = i * 3;
 
         // Set indexes for vertex 1
-        int index_v1 = obj_parse->v_info[f_index + 0].v_index - 1;
-        int index_vt1 = obj_parse->v_info[f_index + 0].vt_index - 1;
-        int index_vn1 = obj_parse->v_info[f_index + 0].vn_index - 1;
+        const int index_v1 = obj_parse->v_info[f_index + 0].v_index - 1;
+        const int index_vt1 = obj_parse->v_info[f_index + 0].vt_index - 1;
+        const int index_vn1 = obj_parse->v_info[f_index + 0].vn_index - 1;
 
-        // Set position info for vertex 1
+        // Set position, uv and normals
         obj_parse->triangles[i].v1.position = obj_parse->v[index_v1];
-
-        // Set uv info for vertex 1
         obj_parse->triangles[i].v1.uv = obj_parse->vt[index_vt1];
-
-        // Set normals info for vertex 1
         obj_parse->triangles[i].v1.normal = obj_parse->vn[index_vn1];
 
         // Set indexes for vertex 2
-        int index_v2 = obj_parse->v_info[f_index + 1].v_index - 1;
-        int index_vt2 = obj_parse->v_info[f_index + 1].vt_index - 1;
-        int index_vn2 = obj_parse->v_info[f_index + 1].vn_index - 1;
+        const int index_v2 = obj_parse->v_info[f_index + 1].v_index - 1;
+        const int index_vt2 = obj_parse->v_info[f_index + 1].vt_index - 1;
+        const int index_vn2 = obj_parse->v_info[f_index + 1].vn_index - 1;
 
-        // Set position info for vertex 2
+        // Set position, uv and normals
         obj_parse->triangles[i].v2.position = obj_parse->v[index_v2];
-
-        // Set uv info for vertex 2
         obj_parse->triangles[i].v2.uv = obj_parse->vt[index_vt2];
-
-        // Set normals info for vertex 2
         obj_parse->triangles[i].v2.normal = obj_parse->vn[index_vn2];
 
         // Set indexes for vertex 3
-        int index_v3 = obj_parse->v_info[f_index + 2].v_index - 1;
-        int index_vt3 = obj_parse->v_info[f_index + 2].vt_index - 1;
-        int index_vn3 = obj_parse->v_info[f_index + 2].vn_index - 1;
+        const int index_v3 = obj_parse->v_info[f_index + 2].v_index - 1;
+        const int index_vt3 = obj_parse->v_info[f_index + 2].vt_index - 1;
+        const int index_vn3 = obj_parse->v_info[f_index + 2].vn_index - 1;
 
-        // Set position info for vertex 3
+        // Set position, uv and normals
         obj_parse->triangles[i].v3.position = obj_parse->v[index_v3];
-
-        // Set uv info for vertex 3
         obj_parse->triangles[i].v3.uv = obj_parse->vt[index_vt3];
-
-        // Set normals info for vertex 3
         obj_parse->triangles[i].v3.normal = obj_parse->vn[index_vn3];
     }
 
