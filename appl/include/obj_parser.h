@@ -9,7 +9,7 @@
 #define UV_LABEL_CHAR_AMOUNT 3
 #define FACE_LABEL "f "
 #define FACE_LABEL_CHAR_AMOUNT 2
-#define INFO_PER_FACE_AMOUNT 3
+#define INFO_PER_TRIANGLE_AMOUNT 3
 #define VERTEX_PER_TRIANGLE 3
 
 #include <stdio.h>
@@ -65,6 +65,10 @@ typedef struct obj_t
 {
     obj_triangle_t* triangle_dynamic_array;
     size_t triangle_amount;
+    size_t vertex_amount;
+    size_t position_amount;
+    size_t uv_amount;
+    size_t normal_amount;
 } obj_t;
 
 /// @brief Function to open an OBJ file for reading
@@ -240,7 +244,7 @@ int obj_save_vertex_info(obj_info_t* obj_info, char* buffer)
 
     strtok_s(buffer, " ", &remaining_tokens); //f token
 
-    for (int i = 0; i < INFO_PER_FACE_AMOUNT; i++)
+    for (int i = 0; i < INFO_PER_TRIANGLE_AMOUNT; i++)
     {
         obj_vertex_t vertex;
 
@@ -309,6 +313,10 @@ obj_t* obj_new()
 
     obj->triangle_dynamic_array = NULL;
     obj->triangle_amount = 0;
+    obj->vertex_amount = 0;
+    obj->position_amount = 0;
+    obj->uv_amount = 0;
+    obj->normal_amount = 0;
 
     return obj;
 }
@@ -353,6 +361,17 @@ int obj_add_triangle(obj_t* obj, obj_triangle_t triangle)
     obj->triangle_amount++;
 
     return 0;
+}
+
+/// @brief Function to update all the counters but triangle_amount inside obj structure
+/// @param obj A pointer to the obj structure to update
+/// @param obj_info A pointer to the obj_info structure from which data will be retrieved
+void obj_update_other_counters(obj_t* obj, obj_info_t* obj_info)
+{
+    obj->vertex_amount = obj_info->vertex_amount;
+    obj->position_amount = obj_info->position_amount;
+    obj->uv_amount = obj_info->uv_amount;
+    obj->normal_amount = obj_info->normal_amount;
 }
 
 /// @brief Function to parse an OBJ file and populate an obj structure with triangle data
@@ -448,6 +467,8 @@ obj_t* obj_parse(const char* file_name)
             return NULL;
         }
     }
+
+    obj_update_other_counters(obj, obj_info);
 
     obj_info_free(obj_info);
 

@@ -34,21 +34,21 @@ CLOVE_TEST(AddThreePositions)
 
    const obj_float3_t position1 = (obj_float3_t){x1, y1, z1};
    int error1 = obj_add_position(obj_info, position1);
-   CLOVE_INT_EQ(0, error1);
+   CLOVE_SIZET_EQ(0, error1);
 
-   CLOVE_INT_EQ(1, obj_info->position_amount);
+   CLOVE_SIZET_EQ(1, obj_info->position_amount);
 
    const obj_float3_t position2 = (obj_float3_t){x2, y2, z2};
    int error2 = obj_add_position(obj_info, position2);
-   CLOVE_INT_EQ(0, error2);
+   CLOVE_SIZET_EQ(0, error2);
 
-   CLOVE_INT_EQ(2, obj_info->position_amount);
+   CLOVE_SIZET_EQ(2, obj_info->position_amount);
 
    const obj_float3_t position3 = (obj_float3_t){x3, y3, z3};
    int error3 = obj_add_position(obj_info, position3);
-   CLOVE_INT_EQ(0, error3);
+   CLOVE_SIZET_EQ(0, error3);
 
-   CLOVE_INT_EQ(3, obj_info->position_amount);
+   CLOVE_SIZET_EQ(3, obj_info->position_amount);
    
    CLOVE_FLOAT_EQ(x1, obj_info->position_dynamic_array[0].x);
    CLOVE_FLOAT_EQ(y1, obj_info->position_dynamic_array[0].y);
@@ -66,9 +66,9 @@ CLOVE_TEST(AddThreePositions)
    CLOVE_NULL(obj_info->uv_dynamic_array);
    CLOVE_NULL(obj_info->vertex_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj_info->normal_amount);
-   CLOVE_INT_EQ(0, obj_info->uv_amount);
-   CLOVE_INT_EQ(0, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(0, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(0, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
    obj_info_free(obj_info);
 }
@@ -91,21 +91,21 @@ CLOVE_TEST(AddThreeNormals)
 
    const obj_float3_t normal1 = (obj_float3_t){x1, y1, z1};
    int error1 = obj_add_normal(obj_info, normal1);
-   CLOVE_INT_EQ(0, error1);
+   CLOVE_SIZET_EQ(0, error1);
 
-   CLOVE_INT_EQ(1, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(1, obj_info->normal_amount);
 
    const obj_float3_t normal2 = (obj_float3_t){x2, y2, z2};
    int error2 = obj_add_normal(obj_info, normal2);
-   CLOVE_INT_EQ(0, error2);
+   CLOVE_SIZET_EQ(0, error2);
 
-   CLOVE_INT_EQ(2, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(2, obj_info->normal_amount);
 
    const obj_float3_t normal3 = (obj_float3_t){x3, y3, z3};
    int error3 = obj_add_normal(obj_info, normal3);
-   CLOVE_INT_EQ(0, error3);
+   CLOVE_SIZET_EQ(0, error3);
 
-   CLOVE_INT_EQ(3, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(3, obj_info->normal_amount);
    
    CLOVE_FLOAT_EQ(x1, obj_info->normal_dynamic_array[0].x);
    CLOVE_FLOAT_EQ(y1, obj_info->normal_dynamic_array[0].y);
@@ -123,9 +123,9 @@ CLOVE_TEST(AddThreeNormals)
    CLOVE_NULL(obj_info->uv_dynamic_array);
    CLOVE_NULL(obj_info->vertex_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj_info->position_amount);
-   CLOVE_INT_EQ(0, obj_info->uv_amount);
-   CLOVE_INT_EQ(0, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(0, obj_info->position_amount);
+   CLOVE_SIZET_EQ(0, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
    obj_info_free(obj_info);
 }
@@ -145,21 +145,21 @@ CLOVE_TEST(AddThreeUvs)
 
    const obj_float2_t uv1 = (obj_float2_t){x1, y1};
    int error1 = obj_add_uv(obj_info, uv1);
-   CLOVE_INT_EQ(0, error1);
+   CLOVE_SIZET_EQ(0, error1);
 
-   CLOVE_INT_EQ(1, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(1, obj_info->uv_amount);
 
    const obj_float2_t uv2 = (obj_float2_t){x2, y2};
    int error2 = obj_add_uv(obj_info, uv2);
-   CLOVE_INT_EQ(0, error2);
+   CLOVE_SIZET_EQ(0, error2);
 
-   CLOVE_INT_EQ(2, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(2, obj_info->uv_amount);
 
    const obj_float2_t uv3 = (obj_float2_t){x3, y3};
    int error3 = obj_add_uv(obj_info, uv3);
-   CLOVE_INT_EQ(0, error3);
+   CLOVE_SIZET_EQ(0, error3);
 
-   CLOVE_INT_EQ(3, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(3, obj_info->uv_amount);
    
    CLOVE_FLOAT_EQ(x1, obj_info->uv_dynamic_array[0].x);
    CLOVE_FLOAT_EQ(y1, obj_info->uv_dynamic_array[0].y);
@@ -174,9 +174,9 @@ CLOVE_TEST(AddThreeUvs)
    CLOVE_NULL(obj_info->normal_dynamic_array);
    CLOVE_NULL(obj_info->vertex_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj_info->position_amount);
-   CLOVE_INT_EQ(0, obj_info->normal_amount);
-   CLOVE_INT_EQ(0, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(0, obj_info->position_amount);
+   CLOVE_SIZET_EQ(0, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
    obj_info_free(obj_info);
 }
@@ -192,7 +192,7 @@ CLOVE_TEST(SavePositionInfo)
       if (strncmp(buffer, "v ", 2) == 0)
       {
          int error = obj_save_position_info(obj_info, buffer);
-         CLOVE_INT_EQ(0, error);
+         CLOVE_SIZET_EQ(0, error);
       }
    }
 
@@ -201,10 +201,10 @@ CLOVE_TEST(SavePositionInfo)
    CLOVE_NULL(obj_info->uv_dynamic_array);
    CLOVE_NULL(obj_info->vertex_dynamic_array);
 
-   CLOVE_INT_EQ(4, obj_info->position_amount);
-   CLOVE_INT_EQ(0, obj_info->normal_amount);
-   CLOVE_INT_EQ(0, obj_info->uv_amount);
-   CLOVE_INT_EQ(0, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(4, obj_info->position_amount);
+   CLOVE_SIZET_EQ(0, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(0, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
    CLOVE_FLOAT_EQ(-1.000000f, obj_info->position_dynamic_array[0].x);
    CLOVE_FLOAT_EQ(1.000000f, obj_info->position_dynamic_array[0].y);
@@ -238,7 +238,7 @@ CLOVE_TEST(SaveNormalInfo)
       if (strncmp(buffer, "vn ", 3) == 0)
       {
          int error = obj_save_normal_info(obj_info, buffer);
-         CLOVE_INT_EQ(0, error);
+         CLOVE_SIZET_EQ(0, error);
       }
    }
 
@@ -247,10 +247,10 @@ CLOVE_TEST(SaveNormalInfo)
    CLOVE_NULL(obj_info->uv_dynamic_array);
    CLOVE_NULL(obj_info->vertex_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj_info->position_amount);
-   CLOVE_INT_EQ(1, obj_info->normal_amount);
-   CLOVE_INT_EQ(0, obj_info->uv_amount);
-   CLOVE_INT_EQ(0, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(0, obj_info->position_amount);
+   CLOVE_SIZET_EQ(1, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(0, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
    CLOVE_FLOAT_EQ(0.000000f, obj_info->normal_dynamic_array[0].x);
    CLOVE_FLOAT_EQ(0.000000f, obj_info->normal_dynamic_array[0].y);
@@ -272,7 +272,7 @@ CLOVE_TEST(SaveUvInfo)
       if (strncmp(buffer, "vt ", 3) == 0)
       {
          int error = obj_save_uv_info(obj_info, buffer);
-         CLOVE_INT_EQ(0, error);
+         CLOVE_SIZET_EQ(0, error);
       }
    }
 
@@ -281,10 +281,10 @@ CLOVE_TEST(SaveUvInfo)
    CLOVE_NOT_NULL(obj_info->uv_dynamic_array);
    CLOVE_NULL(obj_info->vertex_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj_info->position_amount);
-   CLOVE_INT_EQ(0, obj_info->normal_amount);
-   CLOVE_INT_EQ(4, obj_info->uv_amount);
-   CLOVE_INT_EQ(0, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(0, obj_info->position_amount);
+   CLOVE_SIZET_EQ(0, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(4, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
    CLOVE_FLOAT_EQ(1.000000f, obj_info->uv_dynamic_array[0].x);
    CLOVE_FLOAT_EQ(1.000000f, obj_info->uv_dynamic_array[0].y);
@@ -349,12 +349,12 @@ CLOVE_TEST(AddTwoVertices)
    vertex2.uv = uv2;
 
    int error1 = obj_add_vertex(obj_info, vertex1);
-   CLOVE_INT_EQ(0, error1);
+   CLOVE_SIZET_EQ(0, error1);
 
    int error2 = obj_add_vertex(obj_info, vertex2);
-   CLOVE_INT_EQ(0, error2);
+   CLOVE_SIZET_EQ(0, error2);
 
-   CLOVE_INT_EQ(2, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(2, obj_info->vertex_amount);
 
    CLOVE_FLOAT_EQ(vertex1.position.x, obj_info->vertex_dynamic_array[0].position.x);
    CLOVE_FLOAT_EQ(vertex1.position.y, obj_info->vertex_dynamic_array[0].position.y);
@@ -378,9 +378,9 @@ CLOVE_TEST(AddTwoVertices)
    CLOVE_NULL(obj_info->normal_dynamic_array);
    CLOVE_NULL(obj_info->uv_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj_info->position_amount);
-   CLOVE_INT_EQ(0, obj_info->normal_amount);
-   CLOVE_INT_EQ(0, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(0, obj_info->position_amount);
+   CLOVE_SIZET_EQ(0, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(0, obj_info->uv_amount);
 
    obj_info_free(obj_info);
 }
@@ -396,25 +396,25 @@ CLOVE_TEST(SaveAllInfo)
       if(!strncmp(buffer, "v ", 2))
       {
          int error = obj_save_position_info(obj_info, buffer);
-         CLOVE_INT_EQ(0, error);
+         CLOVE_SIZET_EQ(0, error);
       }
 
       if(!strncmp(buffer, "vt ", 3))
       {
          int error = obj_save_uv_info(obj_info, buffer);
-         CLOVE_INT_EQ(0, error);
+         CLOVE_SIZET_EQ(0, error);
       }
 
       if(!strncmp(buffer, "vn ", 3))
       {
          int error = obj_save_normal_info(obj_info, buffer);
-         CLOVE_INT_EQ(0, error);
+         CLOVE_SIZET_EQ(0, error);
       }
 
       if(!strncmp(buffer, "f ", 2))
       {
          int error = obj_save_vertex_info(obj_info, buffer);
-         CLOVE_INT_EQ(0, error);
+         CLOVE_SIZET_EQ(0, error);
       }
    }
 
@@ -423,10 +423,10 @@ CLOVE_TEST(SaveAllInfo)
    CLOVE_NOT_NULL(obj_info->uv_dynamic_array);
    CLOVE_NOT_NULL(obj_info->vertex_dynamic_array);
 
-   CLOVE_INT_EQ(4, obj_info->position_amount);
-   CLOVE_INT_EQ(1, obj_info->normal_amount);
-   CLOVE_INT_EQ(4, obj_info->uv_amount);
-   CLOVE_INT_EQ(6, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(4, obj_info->position_amount);
+   CLOVE_SIZET_EQ(1, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(4, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(6, obj_info->vertex_amount);
 
    CLOVE_FLOAT_EQ(1.000000f, obj_info->vertex_dynamic_array[0].position.x);
    CLOVE_FLOAT_EQ(-1.000000f, obj_info->vertex_dynamic_array[0].position.y);
@@ -451,7 +451,11 @@ CLOVE_TEST(ObjNew)
 
    CLOVE_NULL(obj->triangle_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj->triangle_amount);
+   CLOVE_SIZET_EQ(0, obj->triangle_amount);
+   CLOVE_SIZET_EQ(0, obj->vertex_amount);
+   CLOVE_SIZET_EQ(0, obj->position_amount);
+   CLOVE_SIZET_EQ(0, obj->uv_amount);
+   CLOVE_SIZET_EQ(0, obj->normal_amount);
 
    obj_free(obj);
 }
@@ -466,10 +470,10 @@ CLOVE_TEST(ObjInfoNew)
    CLOVE_NULL(obj_info->uv_dynamic_array);
    CLOVE_NULL(obj_info->vertex_dynamic_array);
 
-   CLOVE_INT_EQ(0, obj_info->position_amount);
-   CLOVE_INT_EQ(0, obj_info->normal_amount);
-   CLOVE_INT_EQ(0, obj_info->uv_amount);
-   CLOVE_INT_EQ(0, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(0, obj_info->position_amount);
+   CLOVE_SIZET_EQ(0, obj_info->normal_amount);
+   CLOVE_SIZET_EQ(0, obj_info->uv_amount);
+   CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
    obj_info_free(obj_info);
 }
@@ -620,9 +624,9 @@ CLOVE_TEST(AddOneTriangle)
 
    int error = obj_add_triangle(obj, triangle);
    CLOVE_NOT_NULL(obj->triangle_dynamic_array);
-   CLOVE_INT_EQ(0, error);
+   CLOVE_SIZET_EQ(0, error);
 
-   CLOVE_INT_EQ(1, obj->triangle_amount);
+   CLOVE_SIZET_EQ(1, obj->triangle_amount);
 
    CLOVE_FLOAT_EQ(position1.x, obj->triangle_dynamic_array[0].v1.position.x);
    CLOVE_FLOAT_EQ(position2.y, obj->triangle_dynamic_array[0].v2.position.y);
@@ -644,7 +648,7 @@ CLOVE_TEST(ReadQuadObj)
    CLOVE_NOT_NULL(obj);
 
    CLOVE_NOT_NULL(obj->triangle_dynamic_array);
-   CLOVE_INT_EQ(2, obj->triangle_amount);
+   CLOVE_SIZET_EQ(2, obj->triangle_amount);
 
    /********** FIRST TRIANGLE **********/
 
@@ -737,24 +741,60 @@ CLOVE_TEST(ReadQuadObj)
    obj_free(obj);
 }
 
-CLOVE_TEST(CheckSuzanneTriangleAmount)
+CLOVE_TEST(UpdateOtherCounters)
+{
+   const size_t vertex_amount = 13;
+   const size_t position_amount = 5;
+   const size_t uv_amount = 65;
+   const size_t normal_amount = 12;
+
+   obj_info_t* obj_info = obj_info_new();
+   obj_t* obj = obj_new();
+
+   obj_info->vertex_amount = vertex_amount;
+   obj_info->position_amount = position_amount;
+   obj_info->uv_amount = uv_amount;
+   obj_info->normal_amount = normal_amount;
+
+   obj_update_other_counters(obj, obj_info);
+
+   CLOVE_SIZET_EQ(vertex_amount, obj->vertex_amount);
+   CLOVE_SIZET_EQ(position_amount, obj->position_amount);
+   CLOVE_SIZET_EQ(uv_amount, obj->uv_amount);
+   CLOVE_SIZET_EQ(normal_amount, obj->normal_amount);
+
+   obj_info_free(obj_info);
+   obj_free(obj);
+}
+
+CLOVE_TEST(CheckSuzanneCounters)
 {
    obj_t* obj = obj_parse("bin\\test\\resources\\suzanne.obj");
    CLOVE_NOT_NULL(obj);
 
    CLOVE_NOT_NULL(obj->triangle_dynamic_array);
-   CLOVE_INT_EQ(968, obj->triangle_amount);
+   CLOVE_SIZET_EQ(968, obj->triangle_amount);
+
+   CLOVE_SIZET_EQ(2904, obj->vertex_amount);
+   CLOVE_SIZET_EQ(511, obj->position_amount);
+   CLOVE_SIZET_EQ(590, obj->uv_amount);
+   CLOVE_SIZET_EQ(507, obj->normal_amount);
 
    obj_free(obj);
 }
 
-CLOVE_TEST(CheckStormtrooperTriangleAmount)
+CLOVE_TEST(CheckStormtrooperCounters)
 {
    obj_t* obj = obj_parse("bin\\test\\resources\\stormtrooper.obj");
    CLOVE_NOT_NULL(obj);
 
    CLOVE_NOT_NULL(obj->triangle_dynamic_array);
-   CLOVE_INT_EQ(6518, obj->triangle_amount);
+   CLOVE_SIZET_EQ(6518, obj->triangle_amount);
+
+   CLOVE_SIZET_EQ(19554, obj->vertex_amount);
+   CLOVE_SIZET_EQ(3275, obj->position_amount);
+   CLOVE_SIZET_EQ(4653, obj->uv_amount);
+   CLOVE_SIZET_EQ(3275, obj->normal_amount);
 
    obj_free(obj);
 }
