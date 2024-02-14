@@ -530,7 +530,7 @@ CLOVE_TEST(TriangleNew)
    vertex3.normal = normal3;
    vertex3.uv = uv3;
 
-   obj_triangle_t triangle = __obj_triangle_new(vertex1, vertex2, vertex3);
+   obj_triangle_t triangle = (obj_triangle_t){vertex1, vertex2, vertex3};
    
    CLOVE_FLOAT_EQ(position1.x, triangle.v1.position.x);
    CLOVE_FLOAT_EQ(position2.y, triangle.v2.position.y);

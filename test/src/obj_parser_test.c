@@ -1,5 +1,5 @@
 #define CLOVE_SUITE_NAME ObjParserTest
-#define OBJ_IMPLEMENTATION
+#define OBJ_PARSER_IMPLEMENTATION
 #include "clove-unit.h"
 #include "obj_parser.h"
 
@@ -83,11 +83,11 @@ CLOVE_TEST(AddOneTriangle)
    vertex3.normal = normal3;
    vertex3.uv = uv3;
 
-   obj_triangle_t triangle = __obj_triangle_new(vertex1, vertex2, vertex3);
+   obj_triangle_t triangle = (obj_triangle_t){vertex1, vertex2, vertex3};
 
    obj_t* obj = __obj_new();
 
-   int error = __obj_add_triangle(obj, triangle);
+   int error = __obj_add_triangle(obj, &triangle);
    CLOVE_NOT_NULL(obj->triangles);
    CLOVE_SIZET_EQ(0, error);
 
