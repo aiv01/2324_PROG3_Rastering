@@ -144,11 +144,11 @@ void __obj_info_free(obj_info_t* obj_info);
 
 /// @brief Function to create a new obj and initialize its members
 /// @return A pointer to the obj structure
-obj_t* __obj_new();
+obj_t* obj_new();
 
 /// @brief Function to free the memory allocated for an obj
 /// @param obj The obj structure to free
-void __obj_free(obj_t* obj);
+void obj_free(obj_t* obj);
 
 /// @brief Function to add a triangle inside the obj triangle dynamic array
 /// @param obj A pointer to the obj structure
@@ -408,7 +408,7 @@ void __obj_info_free(obj_info_t* obj_info)
     free(obj_info);
 }
 
-obj_t* __obj_new()
+obj_t* obj_new()
 {
     obj_t* obj = (obj_t*)malloc(sizeof(obj_t));
     if(!obj)
@@ -427,7 +427,7 @@ obj_t* __obj_new()
     return obj;
 }
 
-void __obj_free(obj_t* obj)
+void obj_free(obj_t* obj)
 {
     free(obj->triangles);
 
@@ -485,7 +485,7 @@ obj_t* obj_parse(const char* file_name)
         return NULL;
     }
 
-    obj_t* obj = __obj_new();
+    obj_t* obj = obj_new();
     if(!obj)
     {
         fprintf(stderr, "Error: Trying to allocate memory for obj!\n");
@@ -504,7 +504,7 @@ obj_t* obj_parse(const char* file_name)
                 fprintf(stderr, "Error: Trying to save position inside obj_info!\n");
                 __obj_file_close(file);
                 __obj_info_free(obj_info);
-                __obj_free(obj);
+                obj_free(obj);
                 return NULL;
             }
         }
@@ -516,7 +516,7 @@ obj_t* obj_parse(const char* file_name)
                 fprintf(stderr, "Error: Trying to save uv inside obj_info!\n");
                 __obj_file_close(file);
                 __obj_info_free(obj_info);
-                __obj_free(obj);
+                obj_free(obj);
                 return NULL;
             }
         }
@@ -528,7 +528,7 @@ obj_t* obj_parse(const char* file_name)
                 fprintf(stderr, "Error: Trying to save normal inside obj_info!\n");
                 __obj_file_close(file);
                 __obj_info_free(obj_info);
-                __obj_free(obj);
+                obj_free(obj);
                 return NULL;
             }
         }
@@ -539,7 +539,7 @@ obj_t* obj_parse(const char* file_name)
             {
                 fprintf(stderr, "Error: Trying to save vertex inside obj_info!\n");
                 __obj_info_free(obj_info);
-                __obj_free(obj);
+                obj_free(obj);
                 return NULL;
             }
         }
@@ -554,7 +554,7 @@ obj_t* obj_parse(const char* file_name)
         {
             fprintf(stderr, "Error: Trying to add triangle inside obj!\n");
             __obj_info_free(obj_info);
-            __obj_free(obj);
+            obj_free(obj);
             return NULL;
         }
     }

@@ -5,7 +5,7 @@
 
 CLOVE_TEST(ObjNew)
 {
-   obj_t* obj = __obj_new();
+   obj_t* obj = obj_new();
    CLOVE_NOT_NULL(obj);
 
    CLOVE_NULL(obj->triangles);
@@ -17,7 +17,7 @@ CLOVE_TEST(ObjNew)
    CLOVE_SIZET_EQ(0, obj->uv_amount);
    CLOVE_SIZET_EQ(0, obj->normal_amount);
 
-   __obj_free(obj);
+   obj_free(obj);
 }
 
 CLOVE_TEST(AddOneTriangle)
@@ -85,7 +85,7 @@ CLOVE_TEST(AddOneTriangle)
 
    obj_triangle_t triangle = (obj_triangle_t){vertex1, vertex2, vertex3};
 
-   obj_t* obj = __obj_new();
+   obj_t* obj = obj_new();
 
    int error = __obj_add_triangle(obj, &triangle);
    CLOVE_NOT_NULL(obj->triangles);
@@ -104,7 +104,7 @@ CLOVE_TEST(AddOneTriangle)
    CLOVE_FLOAT_EQ(normal2.y, obj->triangles[0].v2.normal.y);
    CLOVE_FLOAT_EQ(normal3.z, obj->triangles[0].v3.normal.z);
 
-   __obj_free(obj);
+   obj_free(obj);
 }
 
 CLOVE_TEST(ReadQuadObj)
@@ -203,7 +203,7 @@ CLOVE_TEST(ReadQuadObj)
    CLOVE_FLOAT_EQ(0.0f, obj->triangles[1].v3.normal.y);
    CLOVE_FLOAT_EQ(1.0f, obj->triangles[1].v3.normal.z);
 
-   __obj_free(obj);
+   obj_free(obj);
 }
 
 CLOVE_TEST(UpdateOtherCounters)
@@ -214,7 +214,7 @@ CLOVE_TEST(UpdateOtherCounters)
    const size_t normal_amount = 12;
 
    obj_info_t* obj_info = __obj_info_new();
-   obj_t* obj = __obj_new();
+   obj_t* obj = obj_new();
 
    obj_info->vertex_amount = vertex_amount;
    obj_info->position_amount = position_amount;
@@ -229,7 +229,7 @@ CLOVE_TEST(UpdateOtherCounters)
    CLOVE_SIZET_EQ(normal_amount, obj->normal_amount);
 
    __obj_info_free(obj_info);
-   __obj_free(obj);
+   obj_free(obj);
 }
 
 CLOVE_TEST(CheckSuzanneCounters)
@@ -245,7 +245,7 @@ CLOVE_TEST(CheckSuzanneCounters)
    CLOVE_SIZET_EQ(590, obj->uv_amount);
    CLOVE_SIZET_EQ(507, obj->normal_amount);
 
-   __obj_free(obj);
+   obj_free(obj);
 }
 
 CLOVE_TEST(CheckStormtrooperCounters)
@@ -261,5 +261,5 @@ CLOVE_TEST(CheckStormtrooperCounters)
    CLOVE_SIZET_EQ(4653, obj->uv_amount);
    CLOVE_SIZET_EQ(3275, obj->normal_amount);
 
-   __obj_free(obj);
+   obj_free(obj);
 }
