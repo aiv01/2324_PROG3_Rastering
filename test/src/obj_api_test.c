@@ -4,21 +4,21 @@
 
 CLOVE_TEST(FileOpenNotSuccesfully)
 {
-   FILE* file = _obj_file_open("test.txt");
+   FILE* file = __obj_file_open("test.txt");
    CLOVE_NULL(file);
 }
 
 CLOVE_TEST(FileOpenSuccesfully)
 {
-   FILE* file = _obj_file_open("bin\\test\\resources\\quad.obj");
+   FILE* file = __obj_file_open("bin\\test\\resources\\quad.obj");
    CLOVE_NOT_NULL(file);
 
-   _obj_file_close(file);
+   __obj_file_close(file);
 }
 
 CLOVE_TEST(AddThreePositions)
 {
-   obj_info_t* obj_info = _obj_info_new();
+   obj_info_t* obj_info = __obj_info_new();
 
    const float x1 = 15.234f;
    const float y1 = 125.234f;
@@ -33,19 +33,19 @@ CLOVE_TEST(AddThreePositions)
    const float z3 = 194.8942f;
 
    const obj_float3_t position1 = (obj_float3_t){x1, y1, z1};
-   int error1 = _obj_add_position(obj_info, position1);
+   int error1 = __obj_add_position(obj_info, position1);
    CLOVE_SIZET_EQ(0, error1);
 
    CLOVE_SIZET_EQ(1, obj_info->position_amount);
 
    const obj_float3_t position2 = (obj_float3_t){x2, y2, z2};
-   int error2 = _obj_add_position(obj_info, position2);
+   int error2 = __obj_add_position(obj_info, position2);
    CLOVE_SIZET_EQ(0, error2);
 
    CLOVE_SIZET_EQ(2, obj_info->position_amount);
 
    const obj_float3_t position3 = (obj_float3_t){x3, y3, z3};
-   int error3 = _obj_add_position(obj_info, position3);
+   int error3 = __obj_add_position(obj_info, position3);
    CLOVE_SIZET_EQ(0, error3);
 
    CLOVE_SIZET_EQ(3, obj_info->position_amount);
@@ -70,12 +70,12 @@ CLOVE_TEST(AddThreePositions)
    CLOVE_SIZET_EQ(0, obj_info->uv_amount);
    CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 }
 
 CLOVE_TEST(AddThreeNormals)
 {
-   obj_info_t* obj_info = _obj_info_new();
+   obj_info_t* obj_info = __obj_info_new();
 
    const float x1 = 15.234f;
    const float y1 = 125.234f;
@@ -90,19 +90,19 @@ CLOVE_TEST(AddThreeNormals)
    const float z3 = 194.8942f;
 
    const obj_float3_t normal1 = (obj_float3_t){x1, y1, z1};
-   int error1 = _obj_add_normal(obj_info, normal1);
+   int error1 = __obj_add_normal(obj_info, normal1);
    CLOVE_SIZET_EQ(0, error1);
 
    CLOVE_SIZET_EQ(1, obj_info->normal_amount);
 
    const obj_float3_t normal2 = (obj_float3_t){x2, y2, z2};
-   int error2 = _obj_add_normal(obj_info, normal2);
+   int error2 = __obj_add_normal(obj_info, normal2);
    CLOVE_SIZET_EQ(0, error2);
 
    CLOVE_SIZET_EQ(2, obj_info->normal_amount);
 
    const obj_float3_t normal3 = (obj_float3_t){x3, y3, z3};
-   int error3 = _obj_add_normal(obj_info, normal3);
+   int error3 = __obj_add_normal(obj_info, normal3);
    CLOVE_SIZET_EQ(0, error3);
 
    CLOVE_SIZET_EQ(3, obj_info->normal_amount);
@@ -127,12 +127,12 @@ CLOVE_TEST(AddThreeNormals)
    CLOVE_SIZET_EQ(0, obj_info->uv_amount);
    CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 }
 
 CLOVE_TEST(AddThreeUvs)
 {
-   obj_info_t* obj_info = _obj_info_new();
+   obj_info_t* obj_info = __obj_info_new();
 
    const float x1 = 15.234f;
    const float y1 = 125.234f;
@@ -144,19 +144,19 @@ CLOVE_TEST(AddThreeUvs)
    const float y3 = 234.312f;
 
    const obj_float2_t uv1 = (obj_float2_t){x1, y1};
-   int error1 = _obj_add_uv(obj_info, uv1);
+   int error1 = __obj_add_uv(obj_info, uv1);
    CLOVE_SIZET_EQ(0, error1);
 
    CLOVE_SIZET_EQ(1, obj_info->uv_amount);
 
    const obj_float2_t uv2 = (obj_float2_t){x2, y2};
-   int error2 = _obj_add_uv(obj_info, uv2);
+   int error2 = __obj_add_uv(obj_info, uv2);
    CLOVE_SIZET_EQ(0, error2);
 
    CLOVE_SIZET_EQ(2, obj_info->uv_amount);
 
    const obj_float2_t uv3 = (obj_float2_t){x3, y3};
-   int error3 = _obj_add_uv(obj_info, uv3);
+   int error3 = __obj_add_uv(obj_info, uv3);
    CLOVE_SIZET_EQ(0, error3);
 
    CLOVE_SIZET_EQ(3, obj_info->uv_amount);
@@ -178,20 +178,20 @@ CLOVE_TEST(AddThreeUvs)
    CLOVE_SIZET_EQ(0, obj_info->normal_amount);
    CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 }
 
 CLOVE_TEST(SavePositionInfo)
 {
-   FILE* file = _obj_file_open("bin\\test\\resources\\quad.obj");
-   obj_info_t* obj_info = _obj_info_new();
+   FILE* file = __obj_file_open("bin\\test\\resources\\quad.obj");
+   obj_info_t* obj_info = __obj_info_new();
    char buffer[1024];
 
    while(fgets(buffer, sizeof(buffer), file))
    {
       if (strncmp(buffer, "v ", 2) == 0)
       {
-         int error = _obj_save_position_info(obj_info, buffer);
+         int error = __obj_save_position_info(obj_info, buffer);
          CLOVE_SIZET_EQ(0, error);
       }
    }
@@ -222,22 +222,22 @@ CLOVE_TEST(SavePositionInfo)
    CLOVE_FLOAT_EQ(-1.000000f, obj_info->position_dynamic_array[3].y);
    CLOVE_FLOAT_EQ(0.000000f, obj_info->position_dynamic_array[3].z);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 
-   _obj_file_close(file);
+   __obj_file_close(file);
 }
 
 CLOVE_TEST(SaveNormalInfo)
 {
-   FILE* file = _obj_file_open("bin\\test\\resources\\quad.obj");
-   obj_info_t* obj_info = _obj_info_new();
+   FILE* file = __obj_file_open("bin\\test\\resources\\quad.obj");
+   obj_info_t* obj_info = __obj_info_new();
    char buffer[1024];
 
    while(fgets(buffer, sizeof(buffer), file))
    {
       if (strncmp(buffer, "vn ", 3) == 0)
       {
-         int error = _obj_save_normal_info(obj_info, buffer);
+         int error = __obj_save_normal_info(obj_info, buffer);
          CLOVE_SIZET_EQ(0, error);
       }
    }
@@ -256,22 +256,22 @@ CLOVE_TEST(SaveNormalInfo)
    CLOVE_FLOAT_EQ(0.000000f, obj_info->normal_dynamic_array[0].y);
    CLOVE_FLOAT_EQ(1.000000f, obj_info->normal_dynamic_array[0].z);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 
-   _obj_file_close(file);
+   __obj_file_close(file);
 }
 
 CLOVE_TEST(SaveUvInfo)
 {
-   FILE* file = _obj_file_open("bin\\test\\resources\\quad.obj");
-   obj_info_t* obj_info = _obj_info_new();
+   FILE* file = __obj_file_open("bin\\test\\resources\\quad.obj");
+   obj_info_t* obj_info = __obj_info_new();
    char buffer[1024];
 
    while(fgets(buffer, sizeof(buffer), file))
    {
       if (strncmp(buffer, "vt ", 3) == 0)
       {
-         int error = _obj_save_uv_info(obj_info, buffer);
+         int error = __obj_save_uv_info(obj_info, buffer);
          CLOVE_SIZET_EQ(0, error);
       }
    }
@@ -298,14 +298,14 @@ CLOVE_TEST(SaveUvInfo)
    CLOVE_FLOAT_EQ(1.000000f, obj_info->uv_dynamic_array[3].x);
    CLOVE_FLOAT_EQ(0.000000f, obj_info->uv_dynamic_array[3].y);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 
-   _obj_file_close(file);
+   __obj_file_close(file);
 }
 
 CLOVE_TEST(AddTwoVertices)
 {
-   obj_info_t* obj_info = _obj_info_new();
+   obj_info_t* obj_info = __obj_info_new();
 
    const float position_x1 = 15.234f;
    const float position_y1 = 125.234f;
@@ -348,10 +348,10 @@ CLOVE_TEST(AddTwoVertices)
    vertex2.normal = normal2;
    vertex2.uv = uv2;
 
-   int error1 = _obj_add_vertex(obj_info, vertex1);
+   int error1 = __obj_add_vertex(obj_info, vertex1);
    CLOVE_SIZET_EQ(0, error1);
 
-   int error2 = _obj_add_vertex(obj_info, vertex2);
+   int error2 = __obj_add_vertex(obj_info, vertex2);
    CLOVE_SIZET_EQ(0, error2);
 
    CLOVE_SIZET_EQ(2, obj_info->vertex_amount);
@@ -382,38 +382,38 @@ CLOVE_TEST(AddTwoVertices)
    CLOVE_SIZET_EQ(0, obj_info->normal_amount);
    CLOVE_SIZET_EQ(0, obj_info->uv_amount);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 }
 
 CLOVE_TEST(SaveAllInfo)
 {
-   FILE* file = _obj_file_open("bin\\test\\resources\\quad.obj");
-   obj_info_t* obj_info = _obj_info_new();
+   FILE* file = __obj_file_open("bin\\test\\resources\\quad.obj");
+   obj_info_t* obj_info = __obj_info_new();
    char buffer[1024];
 
    while(fgets(buffer, sizeof(buffer), file))
    {
       if(!strncmp(buffer, "v ", 2))
       {
-         int error = _obj_save_position_info(obj_info, buffer);
+         int error = __obj_save_position_info(obj_info, buffer);
          CLOVE_SIZET_EQ(0, error);
       }
 
       if(!strncmp(buffer, "vt ", 3))
       {
-         int error = _obj_save_uv_info(obj_info, buffer);
+         int error = __obj_save_uv_info(obj_info, buffer);
          CLOVE_SIZET_EQ(0, error);
       }
 
       if(!strncmp(buffer, "vn ", 3))
       {
-         int error = _obj_save_normal_info(obj_info, buffer);
+         int error = __obj_save_normal_info(obj_info, buffer);
          CLOVE_SIZET_EQ(0, error);
       }
 
       if(!strncmp(buffer, "f ", 2))
       {
-         int error = _obj_save_vertex_info(obj_info, buffer);
+         int error = __obj_save_vertex_info(obj_info, buffer);
          CLOVE_SIZET_EQ(0, error);
       }
    }
@@ -439,14 +439,14 @@ CLOVE_TEST(SaveAllInfo)
    CLOVE_FLOAT_EQ(1.000000f, obj_info->vertex_dynamic_array[3].uv.x);
    CLOVE_FLOAT_EQ(1.000000f, obj_info->vertex_dynamic_array[3].uv.y);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 
-   _obj_file_close(file);
+   __obj_file_close(file);
 }
 
 CLOVE_TEST(ObjInfoNew)
 {
-   obj_info_t* obj_info = _obj_info_new();
+   obj_info_t* obj_info = __obj_info_new();
    CLOVE_NOT_NULL(obj_info);
 
    CLOVE_NULL(obj_info->position_dynamic_array);
@@ -464,7 +464,7 @@ CLOVE_TEST(ObjInfoNew)
    CLOVE_SIZET_EQ(10, obj_info->uv_dynamic_array_capacity);
    CLOVE_SIZET_EQ(10, obj_info->vertex_dynamic_array_capacity);
 
-   _obj_info_free(obj_info);
+   __obj_info_free(obj_info);
 }
 
 CLOVE_TEST(TriangleNew)
@@ -530,7 +530,7 @@ CLOVE_TEST(TriangleNew)
    vertex3.normal = normal3;
    vertex3.uv = uv3;
 
-   obj_triangle_t triangle = _obj_triangle_new(vertex1, vertex2, vertex3);
+   obj_triangle_t triangle = __obj_triangle_new(vertex1, vertex2, vertex3);
    
    CLOVE_FLOAT_EQ(position1.x, triangle.v1.position.x);
    CLOVE_FLOAT_EQ(position2.y, triangle.v2.position.y);
