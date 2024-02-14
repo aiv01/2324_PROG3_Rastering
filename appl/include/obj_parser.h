@@ -53,6 +53,8 @@ typedef struct
     obj_triangle_t *triangles;
 } obj_t;
 
+/// @param file_name Path of source file
+/// @return Object structure
 // Function declarations
 obj_t *obj_parse(const char *file_name);
 
@@ -219,7 +221,7 @@ obj_t *obj_parse(const char *file_name)
     return obj;
 }
 
-void obj_parser_destroy(obj_t *obj)
+void obj_parse_destroy(obj_t *obj)
 {
     free(obj->v);
     free(obj->vt);

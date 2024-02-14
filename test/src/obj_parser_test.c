@@ -84,7 +84,7 @@ CLOVE_TEST(ReadQuadObj)
    CLOVE_INT_EQ(2, obj->v_info[5].vt_index);
    CLOVE_INT_EQ(1, obj->v_info[5].vn_index);
 
-   obj_parser_destroy(obj);
+   obj_parse_destroy(obj);
 }
 
 CLOVE_TEST(CheckSuzanneCounts)
@@ -98,7 +98,7 @@ CLOVE_TEST(CheckSuzanneCounts)
    CLOVE_INT_EQ(507, obj->vn_count);
    CLOVE_INT_EQ(968, obj->f_count);
 
-   obj_parser_destroy(obj);
+   obj_parse_destroy(obj);
 }
 
 CLOVE_TEST(CheckObjCtor)
@@ -183,5 +183,5 @@ CLOVE_TEST(CheckObjCtor)
    CLOVE_FLOAT_EQ(0, obj->triangles[1].v3.normal.y);
    CLOVE_FLOAT_EQ(1, obj->triangles[1].v3.normal.z);
 
-   obj_parser_destroy(obj);
+   obj_parse_destroy(obj);
 }
