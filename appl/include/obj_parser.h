@@ -154,12 +154,12 @@ void obj_free(obj_t* obj);
 /// @param obj A pointer to the obj structure
 /// @param triangle The triangle structure to be added
 /// @return An error number, 0 if everything have been completed succesfully
-int __obj_add_triangle(obj_t* obj, obj_triangle_t* triangle);
+int __obj_add_triangle(obj_t* obj, const obj_triangle_t* triangle);
 
 /// @brief Function to update all the counters but triangle_amount inside obj structure
 /// @param obj A pointer to the obj structure to update
 /// @param obj_info A pointer to the obj_info structure from which data will be retrieved
-void __obj_update_other_counters(obj_t* obj, obj_info_t* obj_info);
+void __obj_update_other_counters(obj_t* obj, const obj_info_t* obj_info);
 
 /// @brief Function to parse an OBJ file and populate an obj structure with triangle data
 /// @param file_name Complete path of the file to read
@@ -434,7 +434,7 @@ void obj_free(obj_t* obj)
     free(obj);
 }
 
-int __obj_add_triangle(obj_t* obj, obj_triangle_t* triangle)
+int __obj_add_triangle(obj_t* obj, const obj_triangle_t* triangle)
 {
     if(obj->triangle_amount != 0)
     {
@@ -460,7 +460,7 @@ int __obj_add_triangle(obj_t* obj, obj_triangle_t* triangle)
     return 0;
 }
 
-void __obj_update_other_counters(obj_t* obj, obj_info_t* obj_info)
+void __obj_update_other_counters(obj_t* obj, const obj_info_t* obj_info)
 {
     obj->vertex_amount = obj_info->vertex_amount;
     obj->position_amount = obj_info->position_amount;
@@ -508,8 +508,7 @@ obj_t* obj_parse(const char* file_name)
                 return NULL;
             }
         }
-
-        if(!strncmp(buffer, UV_LABEL, UV_LABEL_CHAR_AMOUNT))
+        else if(!strncmp(buffer, UV_LABEL, UV_LABEL_CHAR_AMOUNT))
         {
             if(__obj_save_uv_info(obj_info, buffer))
             {
@@ -520,8 +519,7 @@ obj_t* obj_parse(const char* file_name)
                 return NULL;
             }
         }
-
-        if(!strncmp(buffer, NORMAL_LABEL, NORMAL_LABEL_CHAR_AMOUNT))
+        else if(!strncmp(buffer, NORMAL_LABEL, NORMAL_LABEL_CHAR_AMOUNT))
         {
             if(__obj_save_normal_info(obj_info, buffer))
             {
@@ -532,8 +530,7 @@ obj_t* obj_parse(const char* file_name)
                 return NULL;
             }
         }
-
-        if(!strncmp(buffer, FACE_LABEL, FACE_LABEL_CHAR_AMOUNT))
+        else if(!strncmp(buffer, FACE_LABEL, FACE_LABEL_CHAR_AMOUNT))
         {
             if(__obj_save_vertex_info(obj_info, buffer))
             {
