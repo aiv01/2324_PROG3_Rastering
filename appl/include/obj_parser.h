@@ -124,49 +124,48 @@ obj_t *obj_parse(const char *file_name)
     // Inside your loop:
     while (fgets(buffer, sizeof(buffer), file))
     {
-        if (strncmp(buffer, "v ", 2) == 0)
+        char *remaining_tokens;
+        char *token = strtok_s(buffer, " ", &remaining_tokens);
+
+        if (strcmp(token, "v") == 0)
         {
-            char *remaining_tokens;
-
-            obj->v[v_index].x = strtof(strtok_s(buffer, "v ", &remaining_tokens), NULL);
-            obj->v[v_index].y = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
-            obj->v[v_index].z = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
-
+            // Get values from buffer and fill struct
+            sscanf_s(remaining_tokens, "%f %f %f", &(obj->v[v_index].x), &(obj->v[v_index].y), &(obj->v[v_index].z));
             v_index++;
         }
 
-        if (strncmp(buffer, "vt ", 3) == 0)
+        else if (strcmp(token, "vt") == 0)
         {
-            char *remaining_tokens;
-
-            obj->vt[vt_index].x = strtof(strtok_s(buffer, "vt ", &remaining_tokens), NULL);
-            obj->vt[vt_index].y = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
-
+            // Get values from buffer and fill struct
+            sscanf_s(remaining_tokens, "%f %f", &(obj->vt[vt_index].x), &(obj->vt[vt_index].y));
             vt_index++;
         }
 
-        if (strncmp(buffer, "vn ", 3) == 0)
+        else if (strcmp(token, "vn") == 0)
         {
-            char *remaining_tokens;
-
-            obj->vn[vn_index].x = strtof(strtok_s(buffer, "vn ", &remaining_tokens), NULL);
-            obj->vn[vn_index].y = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
-            obj->vn[vn_index].z = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
-
+            // Get values from buffer and fill struct
+            sscanf_s(remaining_tokens, "%f %f %f", &(obj->vn[vn_index].x), &(obj->vn[vn_index].y), &(obj->vn[vn_index].z));
             vn_index++;
         }
 
-        if (strncmp(buffer, "f ", 2) == 0)
+        else if (strcmp(token, "f") == 0)
         {
-            char *remaining_tokens;
-
-            strtok_s(buffer, " ", &remaining_tokens); // remove "f " token
-
             for (int i = 0; i < 3; i++)
             {
-                obj->v_info[f_index + i].v_index = strtol(strtok_s(NULL, "/", &remaining_tokens), NULL, 10);
-                obj->v_info[f_index + i].vt_index = strtol(strtok_s(NULL, "/", &remaining_tokens), NULL, 10);
-                obj->v_info[f_index + i].vn_index = strtol(strtok_s(NULL, " ", &remaining_tokens), NULL, 10);
+                // Get values from buffer and fill struct
+                sscanf_s(remaining_tokens, "%d/%d/%d",
+                         &(obj->v_info[f_index + i].v_index),
+                         &(obj->v_info[f_index + i].vt_index),
+                         &(obj->v_info[f_index + i].vn_index));
+
+                // Update buffer to next triplet
+                while (*remaining_tokens && *remaining_tokens != ' ')
+                {
+                    remaining_tokens++;
+                }
+
+                // Avoid blank space
+                remaining_tokens++;
             }
 
             f_index += 3;
