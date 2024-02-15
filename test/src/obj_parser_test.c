@@ -5,7 +5,7 @@
 CLOVE_TEST(ReadQuadObj)
 {
    char *file_name = "bin\\test\\resources\\quad.obj";
-   obj_t *obj = obj_parse(file_name);
+   obj_parsed_t *obj = obj_parse(file_name);
 
    CLOVE_NOT_NULL(obj);
    CLOVE_INT_EQ(4, obj->v_count);
@@ -77,10 +77,87 @@ CLOVE_TEST(ReadQuadObj)
    CLOVE_INT_EQ(1, obj->v_info[5].vn_index);
 }
 
+CLOVE_TEST(ObjStructCreate)
+{
+   char *file_name = "bin\\test\\resources\\quad.obj";
+   obj_parsed_t *obj_parsed = obj_parse(file_name);
+   obj_t *obj = obj_create(obj_parsed);
+
+   CLOVE_INT_EQ(obj->triangle_count, 2);
+
+   CLOVE_INT_EQ(obj->triangles[0].v1.position.x, 1);
+   CLOVE_INT_EQ(obj->triangles[0].v1.position.y, -1);
+   CLOVE_INT_EQ(obj->triangles[0].v1.position.z, 0);
+
+   CLOVE_INT_EQ(obj->triangles[0].v2.position.x, -1);
+   CLOVE_INT_EQ(obj->triangles[0].v2.position.y, -1);
+   CLOVE_INT_EQ(obj->triangles[0].v2.position.z, 0);
+
+   CLOVE_INT_EQ(obj->triangles[0].v3.position.x, -1);
+   CLOVE_INT_EQ(obj->triangles[0].v3.position.y, 1);
+   CLOVE_INT_EQ(obj->triangles[0].v3.position.z, 0);
+
+   CLOVE_INT_EQ(obj->triangles[0].v1.uv.x, 1);
+   CLOVE_INT_EQ(obj->triangles[0].v1.uv.y, 0);
+
+   CLOVE_INT_EQ(obj->triangles[0].v2.uv.x, 0);
+   CLOVE_INT_EQ(obj->triangles[0].v2.uv.y, 0);
+
+   CLOVE_INT_EQ(obj->triangles[0].v3.uv.x, 0.f);
+   CLOVE_INT_EQ(obj->triangles[0].v3.uv.y, 1.f);
+
+   CLOVE_INT_EQ(obj->triangles[0].v1.normal.x, 0);
+   CLOVE_INT_EQ(obj->triangles[0].v1.normal.y, 0);
+   CLOVE_INT_EQ(obj->triangles[0].v1.normal.z, 1);
+
+   CLOVE_INT_EQ(obj->triangles[0].v2.normal.x, 0);
+   CLOVE_INT_EQ(obj->triangles[0].v2.normal.y, 0);
+   CLOVE_INT_EQ(obj->triangles[0].v2.normal.z, 1);
+
+   CLOVE_INT_EQ(obj->triangles[0].v3.normal.x, 0);
+   CLOVE_INT_EQ(obj->triangles[0].v3.normal.y, 0);
+   CLOVE_INT_EQ(obj->triangles[0].v3.normal.z, 1);
+
+   CLOVE_INT_EQ(obj->triangles[1].v1.position.x, 1);
+   CLOVE_INT_EQ(obj->triangles[1].v1.position.y, 1);
+   CLOVE_INT_EQ(obj->triangles[1].v1.position.z, 0);
+
+   CLOVE_INT_EQ(obj->triangles[1].v2.position.x, 1);
+   CLOVE_INT_EQ(obj->triangles[1].v2.position.y, -1);
+   CLOVE_INT_EQ(obj->triangles[1].v2.position.z, 0);
+
+   CLOVE_INT_EQ(obj->triangles[1].v3.position.x, -1);
+   CLOVE_INT_EQ(obj->triangles[1].v3.position.y, 1);
+   CLOVE_INT_EQ(obj->triangles[1].v3.position.z, 0);
+
+   CLOVE_INT_EQ(obj->triangles[1].v1.uv.x, 1);
+   CLOVE_INT_EQ(obj->triangles[1].v1.uv.y, 1);
+
+   CLOVE_INT_EQ(obj->triangles[1].v2.uv.x, 1);
+   CLOVE_INT_EQ(obj->triangles[1].v2.uv.y, 0);
+
+   CLOVE_INT_EQ(obj->triangles[1].v3.uv.x, 0.f);
+   CLOVE_INT_EQ(obj->triangles[1].v3.uv.y, 1.f);
+
+   CLOVE_INT_EQ(obj->triangles[1].v1.normal.x, 0);
+   CLOVE_INT_EQ(obj->triangles[1].v1.normal.y, 0);
+   CLOVE_INT_EQ(obj->triangles[1].v1.normal.z, 1);
+
+   CLOVE_INT_EQ(obj->triangles[1].v2.normal.x, 0);
+   CLOVE_INT_EQ(obj->triangles[1].v2.normal.y, 0);
+   CLOVE_INT_EQ(obj->triangles[1].v2.normal.z, 1);
+
+   CLOVE_INT_EQ(obj->triangles[1].v3.normal.x, 0);
+   CLOVE_INT_EQ(obj->triangles[1].v3.normal.y, 0);
+   CLOVE_INT_EQ(obj->triangles[1].v3.normal.z, 1);
+
+   CLOVE_PTR_EQ(obj->parsed_obj, obj_parsed);
+}
+
 CLOVE_TEST(CheckSuzanneCounts)
 {
    char *file_name = "bin\\test\\resources\\suzanne.obj";
-   obj_t *obj = obj_parse(file_name);
+   obj_parsed_t *obj = obj_parse(file_name);
 
    CLOVE_NOT_NULL(obj);
    CLOVE_INT_EQ(511, obj->v_count);

@@ -25,7 +25,7 @@ typedef struct obj_float2_t
     float y;
 } obj_float2_t;
 
-typedef struct obj_t
+typedef struct obj_parsed_t
 {
     int v_count;
     int vt_count;
@@ -35,17 +35,35 @@ typedef struct obj_t
     obj_float2_t *vt;
     obj_float3_t *vn;
     obj_vertex_info_t *v_info;
+} obj_parsed_t;
 
+typedef struct obj_vertex_t
+{
+    obj_float3_t position;
+    obj_float2_t uv;      
+    obj_float3_t normal;  
+} obj_vertex_t;
+
+typedef struct obj_triangle_t{
+    obj_vertex_t v1;
+    obj_vertex_t v2;
+    obj_vertex_t v3;
+} obj_triangle_t;
+
+typedef struct obj_t
+{
+    obj_parsed_t* parsed_obj;
+    obj_triangle_t* triangles;
+    size_t triangle_count;
 } obj_t;
 
-obj_t *obj_parse(const char *file_name)
+obj_parsed_t *obj_parse(const char *file_name)
 {
-
-    obj_t *obj = (obj_t *)malloc(sizeof(obj_t));
-    obj->v_count = 0;
-    obj->vt_count = 0;
-    obj->vn_count = 0;
-    obj->f_count = 0;
+    obj_parsed_t *obj_parsed = (obj_parsed_t *)malloc(sizeof(obj_parsed_t));
+    obj_parsed->v_count = 0;
+    obj_parsed->vt_count = 0;
+    obj_parsed->vn_count = 0;
+    obj_parsed->f_count = 0;
 
     FILE *file;
     fopen_s(&file, file_name, "r");
@@ -62,29 +80,29 @@ obj_t *obj_parse(const char *file_name)
     {
         if (strncmp(buffer, "v ", 2) == 0)
         {
-            obj->v_count++;
+            obj_parsed->v_count++;
         }
 
-        if (strncmp(buffer, "vt ", 3) == 0)
+        else if (strncmp(buffer, "vt ", 3) == 0)
         {
-            obj->vt_count++;
+            obj_parsed->vt_count++;
         }
 
-        if (strncmp(buffer, "vn ", 3) == 0)
+        else if (strncmp(buffer, "vn ", 3) == 0)
         {
-            obj->vn_count++;
+            obj_parsed->vn_count++;
         }
 
-        if (strncmp(buffer, "f ", 2) == 0)
+        else if (strncmp(buffer, "f ", 2) == 0)
         {
-            obj->f_count++;
+            obj_parsed->f_count++;
         }
     }
 
-    obj->v = (obj_float3_t *)malloc(obj->v_count * sizeof(obj_float3_t));
-    obj->vt = (obj_float2_t *)malloc(obj->vt_count * sizeof(obj_float2_t));
-    obj->vn = (obj_float3_t *)malloc(obj->vn_count * sizeof(obj_float3_t));
-    obj->v_info = (obj_vertex_info_t *)malloc(obj->f_count * sizeof(obj_vertex_info_t) * 3);
+    obj_parsed->v = (obj_float3_t *)malloc(obj_parsed->v_count * sizeof(obj_float3_t));
+    obj_parsed->vt = (obj_float2_t *)malloc(obj_parsed->vt_count * sizeof(obj_float2_t));
+    obj_parsed->vn = (obj_float3_t *)malloc(obj_parsed->vn_count * sizeof(obj_float3_t));
+    obj_parsed->v_info = (obj_vertex_info_t *)malloc(obj_parsed->f_count * sizeof(obj_vertex_info_t) * 3);
 
     rewind(file); // seeks file at start
 
@@ -103,18 +121,18 @@ obj_t *obj_parse(const char *file_name)
             strtok_s(buffer, " ", &remaining_tokens); // v token
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj->v[v_index].x = atof(token);
+            obj_parsed->v[v_index].x = atof(token);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj->v[v_index].y = atof(token);
+            obj_parsed->v[v_index].y = atof(token);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj->v[v_index].z = atof(token);
+            obj_parsed->v[v_index].z = atof(token);
 
             v_index++;
         }
 
-        if (strncmp(buffer, "vt ", 3) == 0)
+        else if (strncmp(buffer, "vt ", 3) == 0)
         {
             char *remaining_tokens;
             char *token;
@@ -122,15 +140,15 @@ obj_t *obj_parse(const char *file_name)
             strtok_s(buffer, " ", &remaining_tokens); // vt token
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj->vt[vt_index].x = atof(token);
+            obj_parsed->vt[vt_index].x = atof(token);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj->vt[vt_index].y = atof(token);
+            obj_parsed->vt[vt_index].y = atof(token);
 
             vt_index++;
         }
 
-        if (strncmp(buffer, "vn ", 3) == 0)
+        else if (strncmp(buffer, "vn ", 3) == 0)
         {
             char *remaining_tokens;
             char *token;
@@ -138,18 +156,18 @@ obj_t *obj_parse(const char *file_name)
             strtok_s(buffer, " ", &remaining_tokens); // vt token
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj->vn[vn_index].x = atof(token);
+            obj_parsed->vn[vn_index].x = atof(token);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj->vn[vn_index].y = atof(token);
+            obj_parsed->vn[vn_index].y = atof(token);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj->vn[vn_index].z = atof(token);
+            obj_parsed->vn[vn_index].z = atof(token);
 
             vn_index++;
         }
 
-        if (strncmp(buffer, "f ", 2) == 0)
+        else if (strncmp(buffer, "f ", 2) == 0)
         {
             char *remaining_tokens;
             char *token;
@@ -159,14 +177,13 @@ obj_t *obj_parse(const char *file_name)
             for (int i = 0; i < 3; i++)
             {
                 token = strtok_s(NULL, "/", &remaining_tokens);
-
-                obj->v_info[f_index + i].v_index = atoi(token);
+                obj_parsed->v_info[f_index + i].v_index = atoi(token); // x
 
                 token = strtok_s(NULL, "/", &remaining_tokens);
-                obj->v_info[f_index + i].vt_index = atoi(token);
+                obj_parsed->v_info[f_index + i].vt_index = atoi(token); // y
 
                 token = strtok_s(NULL, " ", &remaining_tokens);
-                obj->v_info[f_index + i].vn_index = atoi(token);
+                obj_parsed->v_info[f_index + i].vn_index = atoi(token); // z
             }
 
             f_index += 3;
@@ -174,6 +191,39 @@ obj_t *obj_parse(const char *file_name)
     }
 
     fclose(file);
+
+    return obj_parsed;
+}
+
+obj_t *obj_create(obj_parsed_t* obj_parsed)
+{
+    if(!obj_parsed) return NULL;
+
+    obj_t *obj = (obj_t*)malloc(sizeof(obj_t));
+
+    obj->triangle_count = obj_parsed->f_count;
+    obj->triangles = (obj_triangle_t*)malloc(sizeof(obj_triangle_t)*obj->triangle_count);
+    obj->parsed_obj = obj_parsed;
+
+    obj_vertex_info_t v_info;
+
+    for (size_t i = 0; i < obj->triangle_count; i++)
+    {
+        v_info = obj_parsed->v_info[i*3]; //vertex 1
+        obj->triangles[i].v1.position = obj_parsed->v[v_info.v_index-1];
+        obj->triangles[i].v1.uv = obj_parsed->vt[v_info.vt_index-1];
+        obj->triangles[i].v1.normal = obj_parsed->vn[v_info.vn_index-1];
+
+        v_info = obj_parsed->v_info[i*3+1]; //vertex 2
+        obj->triangles[i].v2.position = obj_parsed->v[v_info.v_index-1];
+        obj->triangles[i].v2.uv = obj_parsed->vt[v_info.vt_index-1];
+        obj->triangles[i].v2.normal = obj_parsed->vn[v_info.vn_index-1];
+
+        v_info = obj_parsed->v_info[i*3+2]; //vertex 3
+        obj->triangles[i].v3.position = obj_parsed->v[v_info.v_index-1];
+        obj->triangles[i].v3.uv = obj_parsed->vt[v_info.vt_index-1];
+        obj->triangles[i].v3.normal = obj_parsed->vn[v_info.vn_index-1];
+    }    
 
     return obj;
 }
