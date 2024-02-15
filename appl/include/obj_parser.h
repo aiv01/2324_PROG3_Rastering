@@ -63,6 +63,7 @@ typedef struct obj_info_t
     obj_vertex_t* vertex_dynamic_array;
     size_t vertex_amount;
     size_t vertex_dynamic_array_capacity;
+    size_t triangles_capacity;
 } obj_info_t;
 
 /// @brief Structure to hold dynamic arrays of triangles
@@ -70,7 +71,6 @@ typedef struct obj_t
 {
     obj_triangle_t* triangles;
     size_t triangle_amount;
-    size_t triangles_capacity;
     size_t vertex_amount;
     size_t position_amount;
     size_t uv_amount;
@@ -144,7 +144,7 @@ void __obj_info_free(obj_info_t* obj_info);
 
 /// @brief Function to create a new obj and initialize its members
 /// @return A pointer to the obj structure
-obj_t* obj_new();
+obj_t* __obj_new();
 
 /// @brief Function to free the memory allocated for an obj
 /// @param obj The obj structure to free
@@ -154,7 +154,7 @@ void obj_free(obj_t* obj);
 /// @param obj A pointer to the obj structure
 /// @param triangle The triangle structure to be added
 /// @return An error number, 0 if everything have been completed succesfully
-int __obj_add_triangle(obj_t* obj, const obj_triangle_t* triangle);
+int __obj_add_triangle(obj_t* obj, obj_info_t* obj_info, const obj_triangle_t* triangle);
 
 /// @brief Function to update all the counters but triangle_amount inside obj structure
 /// @param obj A pointer to the obj structure to update
@@ -394,6 +394,7 @@ obj_info_t* __obj_info_new()
     obj_info->vertex_dynamic_array = NULL;
     obj_info->vertex_amount = 0;
     obj_info->vertex_dynamic_array_capacity = STARTING_DYNAMIC_ARRAY_CAPACITY;
+    obj_info->triangles_capacity = STARTING_DYNAMIC_ARRAY_CAPACITY;
 
     return obj_info;
 }
@@ -408,7 +409,7 @@ void __obj_info_free(obj_info_t* obj_info)
     free(obj_info);
 }
 
-obj_t* obj_new()
+obj_t* __obj_new()
 {
     obj_t* obj = (obj_t*)malloc(sizeof(obj_t));
     if(!obj)
@@ -418,7 +419,6 @@ obj_t* obj_new()
 
     obj->triangles = NULL;
     obj->triangle_amount = 0;
-    obj->triangles_capacity = STARTING_DYNAMIC_ARRAY_CAPACITY;
     obj->vertex_amount = 0;
     obj->position_amount = 0;
     obj->uv_amount = 0;
@@ -434,14 +434,14 @@ void obj_free(obj_t* obj)
     free(obj);
 }
 
-int __obj_add_triangle(obj_t* obj, const obj_triangle_t* triangle)
+int __obj_add_triangle(obj_t* obj, obj_info_t* obj_info, const obj_triangle_t* triangle)
 {
     if(obj->triangle_amount != 0)
     {
-        if(obj->triangle_amount >= obj->triangles_capacity)
+        if(obj->triangle_amount >= obj_info->triangles_capacity)
         {
-            obj->triangles_capacity *= STARTING_DYNAMIC_ARRAY_CAPACITY;
-            obj->triangles = (obj_triangle_t*)realloc(obj->triangles, (obj->triangles_capacity) * sizeof(obj_triangle_t));
+            obj_info->triangles_capacity *= STARTING_DYNAMIC_ARRAY_CAPACITY;
+            obj->triangles = (obj_triangle_t*)realloc(obj->triangles, (obj_info->triangles_capacity) * sizeof(obj_triangle_t));
         }
     }
     else
@@ -485,7 +485,7 @@ obj_t* obj_parse(const char* file_name)
         return NULL;
     }
 
-    obj_t* obj = obj_new();
+    obj_t* obj = __obj_new();
     if(!obj)
     {
         fprintf(stderr, "Error: Trying to allocate memory for obj!\n");
@@ -547,7 +547,7 @@ obj_t* obj_parse(const char* file_name)
     for(int i = 0; i < obj_info->vertex_amount; i += VERTEX_PER_TRIANGLE)
     {
         obj_triangle_t triangle = (obj_triangle_t){obj_info->vertex_dynamic_array[i], obj_info->vertex_dynamic_array[i + 1], obj_info->vertex_dynamic_array[i + 2]};
-        if(__obj_add_triangle(obj, &triangle))
+        if(__obj_add_triangle(obj, obj_info, &triangle))
         {
             fprintf(stderr, "Error: Trying to add triangle inside obj!\n");
             __obj_info_free(obj_info);

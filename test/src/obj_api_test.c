@@ -458,6 +458,7 @@ CLOVE_TEST(ObjInfoNew)
    CLOVE_SIZET_EQ(0, obj_info->normal_amount);
    CLOVE_SIZET_EQ(0, obj_info->uv_amount);
    CLOVE_SIZET_EQ(0, obj_info->vertex_amount);
+   CLOVE_SIZET_EQ(10, obj_info->triangles_capacity);
 
    CLOVE_SIZET_EQ(10, obj_info->position_dynamic_array_capacity);
    CLOVE_SIZET_EQ(10, obj_info->normal_dynamic_array_capacity);

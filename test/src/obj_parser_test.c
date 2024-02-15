@@ -5,13 +5,12 @@
 
 CLOVE_TEST(ObjNew)
 {
-   obj_t* obj = obj_new();
+   obj_t* obj = __obj_new();
    CLOVE_NOT_NULL(obj);
 
    CLOVE_NULL(obj->triangles);
 
    CLOVE_SIZET_EQ(0, obj->triangle_amount);
-   CLOVE_SIZET_EQ(10, obj->triangles_capacity);
    CLOVE_SIZET_EQ(0, obj->vertex_amount);
    CLOVE_SIZET_EQ(0, obj->position_amount);
    CLOVE_SIZET_EQ(0, obj->uv_amount);
@@ -85,9 +84,10 @@ CLOVE_TEST(AddOneTriangle)
 
    obj_triangle_t triangle = (obj_triangle_t){vertex1, vertex2, vertex3};
 
-   obj_t* obj = obj_new();
+   obj_info_t* obj_info = __obj_info_new();
+   obj_t* obj = __obj_new();
 
-   int error = __obj_add_triangle(obj, &triangle);
+   int error = __obj_add_triangle(obj, obj_info, &triangle);
    CLOVE_NOT_NULL(obj->triangles);
    CLOVE_SIZET_EQ(0, error);
 
@@ -104,6 +104,7 @@ CLOVE_TEST(AddOneTriangle)
    CLOVE_FLOAT_EQ(normal2.y, obj->triangles[0].v2.normal.y);
    CLOVE_FLOAT_EQ(normal3.z, obj->triangles[0].v3.normal.z);
 
+   __obj_info_free(obj_info);
    obj_free(obj);
 }
 
@@ -214,7 +215,7 @@ CLOVE_TEST(UpdateOtherCounters)
    const size_t normal_amount = 12;
 
    obj_info_t* obj_info = __obj_info_new();
-   obj_t* obj = obj_new();
+   obj_t* obj = __obj_new();
 
    obj_info->vertex_amount = vertex_amount;
    obj_info->position_amount = position_amount;
