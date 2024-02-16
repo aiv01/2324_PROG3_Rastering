@@ -1,8 +1,8 @@
 #include "camera.h"
 #include <stdlib.h>
 #include <math.h>
+#include "common.h"
 
-#define M_PI 3.141592
 
 camera_t* camera_new(float vertical_fov, int width, int height)
 {
