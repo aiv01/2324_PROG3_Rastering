@@ -130,21 +130,26 @@ obj_t *obj_parse(const char *file_name)
         if (strcmp(token, "v") == 0)
         {
             // Get values from buffer and fill struct
-            sscanf_s(remaining_tokens, "%f %f %f", &(obj->v[v_index].x), &(obj->v[v_index].y), &(obj->v[v_index].z));
+            obj->v[v_index].x = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
+            obj->v[v_index].y = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
+            obj->v[v_index].z = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
             v_index++;
         }
 
         else if (strcmp(token, "vt") == 0)
         {
             // Get values from buffer and fill struct
-            sscanf_s(remaining_tokens, "%f %f", &(obj->vt[vt_index].x), &(obj->vt[vt_index].y));
+            obj->vt[vt_index].x = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
+            obj->vt[vt_index].y = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
             vt_index++;
         }
 
         else if (strcmp(token, "vn") == 0)
         {
             // Get values from buffer and fill struct
-            sscanf_s(remaining_tokens, "%f %f %f", &(obj->vn[vn_index].x), &(obj->vn[vn_index].y), &(obj->vn[vn_index].z));
+            obj->vn[vn_index].x = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
+            obj->vn[vn_index].y = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
+            obj->vn[vn_index].z = strtof(strtok_s(NULL, " ", &remaining_tokens), NULL);
             vn_index++;
         }
 
@@ -153,19 +158,9 @@ obj_t *obj_parse(const char *file_name)
             for (int i = 0; i < 3; i++)
             {
                 // Get values from buffer and fill struct
-                sscanf_s(remaining_tokens, "%d/%d/%d",
-                         &(obj->v_info[f_index + i].v_index),
-                         &(obj->v_info[f_index + i].vt_index),
-                         &(obj->v_info[f_index + i].vn_index));
-
-                // Update buffer to next triplet
-                while (*remaining_tokens && *remaining_tokens != ' ')
-                {
-                    remaining_tokens++;
-                }
-
-                // Avoid blank space
-                remaining_tokens++;
+                obj->v_info[f_index + i].v_index = strtol(strtok_s(NULL, "/", &remaining_tokens), NULL, 10);
+                obj->v_info[f_index + i].vt_index = strtol(strtok_s(NULL, "/", &remaining_tokens), NULL, 10);
+                obj->v_info[f_index + i].vn_index = strtol(strtok_s(NULL, " ", &remaining_tokens), NULL, 10);
             }
 
             f_index += 3;
