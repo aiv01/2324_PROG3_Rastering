@@ -7,6 +7,7 @@
 #include "vector.h"
 #include "triangle_raster.h"
 #include "camera.h"
+#include "scanline_raster.h"
 
 scene_t* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
     scene_t* scene = (scene_t*)malloc(sizeof(scene_t));
@@ -72,7 +73,7 @@ static void draw_quad_obj(scene_t* scene) {
     }
 }
 
-static void draw_suzanne_obj(scene_t* scene, float delta_time) {
+static void draw_suzanne_obj(scene_t* scene, float delta_time, bool is_wireframe) {
 
     obj_t* obj = scene->suzanne;
 
@@ -104,7 +105,56 @@ static void draw_suzanne_obj(scene_t* scene, float delta_time) {
         vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
 
         color_t red = {255, 0, 0, 255};
-        bbox_triangle_raster(scene->screen, sp1, sp2, sp3, red);
+
+        if (is_wireframe) 
+        {
+            dda_line_raster(scene->screen, sp1.x, sp1.y, sp2.x, sp2.y, red);
+            dda_line_raster(scene->screen, sp1.x, sp1.y, sp3.x, sp3.y, red);
+            dda_line_raster(scene->screen, sp2.x, sp2.y, sp3.x, sp3.y, red);
+        } 
+        else 
+        {
+            bbox_triangle_raster(scene->screen, sp1, sp2, sp3, red);
+        }
+    }
+
+}
+
+static void draw_suzanne_obj_scanline(scene_t* scene, float delta_time) {
+
+    obj_t* obj = scene->suzanne;
+
+    vector3f_t transl = (vector3f_t){0, 0, 5};
+    
+    static float rotation = 0.f;
+
+    rotation += 2.f * delta_time;
+
+    for(size_t i=0; i < obj->triangle_count; ++i) { 
+        vector3f_t wp1 = *(vector3f_t*)&(obj->triangles[i].v1.position);
+        vector3f_t wp2 = *(vector3f_t*)&(obj->triangles[i].v2.position);
+        vector3f_t wp3 = *(vector3f_t*)&(obj->triangles[i].v3.position);
+
+        wp1 = vector3f_mult(wp1, 2);
+        wp2 = vector3f_mult(wp2, 2);
+        wp3 = vector3f_mult(wp3, 2);
+
+        wp1 = vector3f_rotate_y(wp1, rotation);
+        wp2 = vector3f_rotate_y(wp2, rotation);
+        wp3 = vector3f_rotate_y(wp3, rotation);
+        
+        wp1 = vector3f_sub(wp1, transl);
+        wp2 = vector3f_sub(wp2, transl);
+        wp3 = vector3f_sub(wp3, transl);
+        
+        vector2i_t sp1 = camera_world_to_screen_point(scene->camera, wp1);
+        vector2i_t sp2 = camera_world_to_screen_point(scene->camera, wp2);
+        vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
+
+        color_t red = {255, 0, 0, 255};
+
+       
+        scanline_raster(scene->screen, sp1, sp2, sp3);
     }
 
 }
@@ -146,7 +196,9 @@ void scene_update(scene_t* s, float delta_time) {
     */
 
     //draw_quad_obj(s);
-    draw_suzanne_obj(s, delta_time);
+    //draw_suzanne_obj(s, delta_time, true);
+
+    draw_suzanne_obj_scanline(s, delta_time);
 
     screen_blit(s->screen);
 }
