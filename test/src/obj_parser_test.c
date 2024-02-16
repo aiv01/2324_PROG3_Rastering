@@ -1,5 +1,6 @@
 #define CLOVE_SUITE_NAME ObjParserTest
 #include "clove-unit.h"
+#define OBJ_IMPLEMENTATION
 #include "obj_parser.h"
 
 CLOVE_TEST(ReadQuadObj)
@@ -152,6 +153,11 @@ CLOVE_TEST(ObjStructCreate)
    CLOVE_INT_EQ(obj->triangles[1].v3.normal.z, 1);
 
    CLOVE_PTR_EQ(obj->parsed_obj, obj_parsed);
+
+   int result = obj_free(obj);
+   CLOVE_INT_EQ(result,0);
+
+   
 }
 
 CLOVE_TEST(CheckSuzanneCounts)

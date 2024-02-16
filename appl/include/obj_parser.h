@@ -57,6 +57,11 @@ typedef struct obj_t
     size_t triangle_count;
 } obj_t;
 
+#ifndef OBJ_IMPLEMENTATION
+obj_t *obj_create(obj_parsed_t* obj_parsed);
+obj_parsed_t *obj_parse(const char *file_name);
+int obj_free(obj_t* obj);
+#else
 obj_parsed_t *obj_parse(const char *file_name)
 {
     obj_parsed_t *obj_parsed = (obj_parsed_t *)malloc(sizeof(obj_parsed_t));
@@ -104,7 +109,7 @@ obj_parsed_t *obj_parse(const char *file_name)
     obj_parsed->vn = (obj_float3_t *)malloc(obj_parsed->vn_count * sizeof(obj_float3_t));
     obj_parsed->v_info = (obj_vertex_info_t *)malloc(obj_parsed->f_count * sizeof(obj_vertex_info_t) * 3);
 
-    rewind(file); // seeks file at start
+    fseek(file,0,0);
 
     int v_index = 0;
     int vt_index = 0;
@@ -121,13 +126,13 @@ obj_parsed_t *obj_parse(const char *file_name)
             strtok_s(buffer, " ", &remaining_tokens); // v token
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj_parsed->v[v_index].x = atof(token);
+            obj_parsed->v[v_index].x = strtof(token,NULL);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj_parsed->v[v_index].y = atof(token);
+            obj_parsed->v[v_index].y = strtof(token,NULL);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj_parsed->v[v_index].z = atof(token);
+            obj_parsed->v[v_index].z = strtof(token,NULL);
 
             v_index++;
         }
@@ -140,10 +145,10 @@ obj_parsed_t *obj_parse(const char *file_name)
             strtok_s(buffer, " ", &remaining_tokens); // vt token
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj_parsed->vt[vt_index].x = atof(token);
+            obj_parsed->vt[vt_index].x = strtof(token,NULL);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj_parsed->vt[vt_index].y = atof(token);
+            obj_parsed->vt[vt_index].y = strtof(token,NULL);
 
             vt_index++;
         }
@@ -156,13 +161,13 @@ obj_parsed_t *obj_parse(const char *file_name)
             strtok_s(buffer, " ", &remaining_tokens); // vt token
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj_parsed->vn[vn_index].x = atof(token);
+            obj_parsed->vn[vn_index].x = strtof(token,NULL);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj_parsed->vn[vn_index].y = atof(token);
+            obj_parsed->vn[vn_index].y = strtof(token,NULL);
 
             token = strtok_s(NULL, " ", &remaining_tokens);
-            obj_parsed->vn[vn_index].z = atof(token);
+            obj_parsed->vn[vn_index].z = strtof(token,NULL);
 
             vn_index++;
         }
@@ -177,13 +182,13 @@ obj_parsed_t *obj_parse(const char *file_name)
             for (int i = 0; i < 3; i++)
             {
                 token = strtok_s(NULL, "/", &remaining_tokens);
-                obj_parsed->v_info[f_index + i].v_index = atoi(token); // x
+                obj_parsed->v_info[f_index + i].v_index = strtol(token,NULL,10); // x
 
                 token = strtok_s(NULL, "/", &remaining_tokens);
-                obj_parsed->v_info[f_index + i].vt_index = atoi(token); // y
+                obj_parsed->v_info[f_index + i].vt_index = strtol(token,NULL,10); // y
 
                 token = strtok_s(NULL, " ", &remaining_tokens);
-                obj_parsed->v_info[f_index + i].vn_index = atoi(token); // z
+                obj_parsed->v_info[f_index + i].vn_index = strtol(token,NULL,10); // z
             }
 
             f_index += 3;
@@ -227,5 +232,19 @@ obj_t *obj_create(obj_parsed_t* obj_parsed)
 
     return obj;
 }
+
+int obj_free(obj_t* obj)
+{
+    free(obj->parsed_obj->v);
+    free(obj->parsed_obj->vn);
+    free(obj->parsed_obj->vt);
+    free(obj->parsed_obj->v_info);
+    free(obj->parsed_obj);
+    free(obj->triangles);
+    free(obj);
+
+    return 0;
+}
+#endif // OBJ_IMPLEMENTATION 
 
 #endif // end define OBJ_PARSER
