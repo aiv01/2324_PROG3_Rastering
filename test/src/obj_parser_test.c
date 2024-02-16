@@ -93,6 +93,8 @@ CLOVE_TEST(CheckSuzanneCounts)
    obj_t *obj = obj_parse(file_name);
 
    CLOVE_NOT_NULL(obj);
+   CLOVE_SIZET_EQ(968, obj->triangle_count);
+
    CLOVE_INT_EQ(511, obj->v_count);
    CLOVE_INT_EQ(590, obj->vt_count);
    CLOVE_INT_EQ(507, obj->vn_count);
@@ -184,4 +186,19 @@ CLOVE_TEST(CheckObjCtor)
    CLOVE_FLOAT_EQ(1, obj->triangles[1].v3.normal.z);
 
    obj_parse_destroy(obj);
+}
+
+CLOVE_TEST(CheckStormtrooperCounters)
+{
+   obj_t* obj = obj_parse("bin\\test\\resources\\stormtrooper.obj");
+   CLOVE_NOT_NULL(obj);
+
+   CLOVE_NOT_NULL(obj->triangles);
+   CLOVE_SIZET_EQ(6518, obj->triangle_count);
+
+   CLOVE_SIZET_EQ(6518, obj->f_count);
+   CLOVE_SIZET_EQ(3275, obj->v_count);
+   CLOVE_SIZET_EQ(4653, obj->vt_count);
+   CLOVE_SIZET_EQ(3275, obj->vn_count);
+
 }
