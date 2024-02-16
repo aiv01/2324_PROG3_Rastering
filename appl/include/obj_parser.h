@@ -58,6 +58,11 @@ typedef struct
 // Function declarations
 obj_t *obj_parse(const char *file_name);
 
+
+/// @brief destroy the obj
+/// @param obj 
+void obj_parse_destroy(obj_t *obj);
+
 // Define declarations
 #ifdef OBJ_IMPLEMENTATION
 
