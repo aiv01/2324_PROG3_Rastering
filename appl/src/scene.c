@@ -7,13 +7,156 @@
 #include "vector.h"
 #include "triangle_raster.h"
 #include "camera.h"
+#include "scanline_raster.h"
 
 scene_t* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
     scene_t* scene = (scene_t*)malloc(sizeof(scene_t));
     scene->screen = screen_new(screen_width, screen_height, r);
     scene->camera = camera_new(60.f, screen_width, screen_height);
-    scene->camera->position = (vector3f_t){3, -3, 0};
+    scene->camera->position = (vector3f_t){0, 0, 0};
+
+    scene->quad = obj_parse("bin\\appl\\resources\\quad.obj");
+    scene->suzanne = obj_parse("bin\\appl\\resources\\suzanne.obj");
     return scene;
+}
+
+static void draw_two_triangles(scene_t* s) {
+        // World to Screen
+    vector3f_t wp1 = {  0,  0, -10 }; //Top
+    vector3f_t wp2 = { -4, -4, -10 }; //Left
+    vector3f_t wp3 = { +4, -4, -10 }; //Right
+
+    vector2i_t sp1 = camera_world_to_screen_point(s->camera, wp1);
+    vector2i_t sp2 = camera_world_to_screen_point(s->camera, wp2);
+    vector2i_t sp3 = camera_world_to_screen_point(s->camera, wp3);
+
+    color_t green = {0, 255, 0, 255};
+    bbox_triangle_raster(s->screen, sp1, sp2, sp3, green);
+
+    vector3f_t t2_wp1 = {  2,  0, -15 }; //Top
+    vector3f_t t2_wp2 = { -2, -4, -15 }; //Left
+    vector3f_t t2_wp3 = { +6, -4, -15 }; //Right
+
+    vector2i_t t2_sp1 = camera_world_to_screen_point(s->camera, t2_wp1);
+    vector2i_t t2_sp2 = camera_world_to_screen_point(s->camera, t2_wp2);
+    vector2i_t t2_sp3 = camera_world_to_screen_point(s->camera, t2_wp3);
+
+    color_t red = {255, 0, 0, 255};
+    bbox_triangle_raster(s->screen, t2_sp1, t2_sp2, t2_sp3, red);
+}
+
+static void draw_quad_obj(scene_t* scene) {
+
+    obj_t* obj = scene->quad;
+
+    for(size_t i=0; i < obj->triangle_count; ++i) { 
+        /*
+        obj_float3_t* f1 = &obj->triangles[i].v1.position;
+        vector3f_t* v1 = (vector3f_t*)f1;
+        vector3f_t wp1 = *v1;
+        */ 
+
+        vector3f_t wp1 = *(vector3f_t*)&(obj->triangles[i].v1.position);
+        vector3f_t wp2 = *(vector3f_t*)&(obj->triangles[i].v2.position);
+        vector3f_t wp3 = *(vector3f_t*)&(obj->triangles[i].v3.position);
+
+        wp1.z -= 4;
+        wp2.z -= 4;
+        wp3.z -= 4;
+
+        vector2i_t sp1 = camera_world_to_screen_point(scene->camera, wp1);
+        vector2i_t sp2 = camera_world_to_screen_point(scene->camera, wp2);
+        vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
+
+        color_t red = {255, 0, 0, 255};
+        bbox_triangle_raster(scene->screen, sp1, sp2, sp3, red);
+    }
+}
+
+static void draw_suzanne_obj(scene_t* scene, float delta_time, bool is_wireframe) {
+
+    obj_t* obj = scene->suzanne;
+
+    vector3f_t transl = (vector3f_t){0, 0, 5};
+    
+    static float rotation = 0.f;
+
+    rotation += 2.f * delta_time;
+
+    for(size_t i=0; i < obj->triangle_count; ++i) { 
+        vector3f_t wp1 = *(vector3f_t*)&(obj->triangles[i].v1.position);
+        vector3f_t wp2 = *(vector3f_t*)&(obj->triangles[i].v2.position);
+        vector3f_t wp3 = *(vector3f_t*)&(obj->triangles[i].v3.position);
+
+        wp1 = vector3f_mult(wp1, 2);
+        wp2 = vector3f_mult(wp2, 2);
+        wp3 = vector3f_mult(wp3, 2);
+
+        wp1 = vector3f_rotate_y(wp1, rotation);
+        wp2 = vector3f_rotate_y(wp2, rotation);
+        wp3 = vector3f_rotate_y(wp3, rotation);
+        
+        wp1 = vector3f_sub(wp1, transl);
+        wp2 = vector3f_sub(wp2, transl);
+        wp3 = vector3f_sub(wp3, transl);
+        
+        vector2i_t sp1 = camera_world_to_screen_point(scene->camera, wp1);
+        vector2i_t sp2 = camera_world_to_screen_point(scene->camera, wp2);
+        vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
+
+        color_t red = {255, 0, 0, 255};
+
+        if (is_wireframe) 
+        {
+            dda_line_raster(scene->screen, sp1.x, sp1.y, sp2.x, sp2.y, red);
+            dda_line_raster(scene->screen, sp1.x, sp1.y, sp3.x, sp3.y, red);
+            dda_line_raster(scene->screen, sp2.x, sp2.y, sp3.x, sp3.y, red);
+        } 
+        else 
+        {
+            bbox_triangle_raster(scene->screen, sp1, sp2, sp3, red);
+        }
+    }
+
+}
+
+static void draw_suzanne_obj_scanline(scene_t* scene, float delta_time) {
+
+    obj_t* obj = scene->suzanne;
+
+    vector3f_t transl = (vector3f_t){0, 0, 5};
+    
+    static float rotation = 0.f;
+
+    rotation += 2.f * delta_time;
+
+    for(size_t i=0; i < obj->triangle_count; ++i) { 
+        vector3f_t wp1 = *(vector3f_t*)&(obj->triangles[i].v1.position);
+        vector3f_t wp2 = *(vector3f_t*)&(obj->triangles[i].v2.position);
+        vector3f_t wp3 = *(vector3f_t*)&(obj->triangles[i].v3.position);
+
+        wp1 = vector3f_mult(wp1, 2);
+        wp2 = vector3f_mult(wp2, 2);
+        wp3 = vector3f_mult(wp3, 2);
+
+        wp1 = vector3f_rotate_y(wp1, rotation);
+        wp2 = vector3f_rotate_y(wp2, rotation);
+        wp3 = vector3f_rotate_y(wp3, rotation);
+        
+        wp1 = vector3f_sub(wp1, transl);
+        wp2 = vector3f_sub(wp2, transl);
+        wp3 = vector3f_sub(wp3, transl);
+        
+        vector2i_t sp1 = camera_world_to_screen_point(scene->camera, wp1);
+        vector2i_t sp2 = camera_world_to_screen_point(scene->camera, wp2);
+        vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
+
+        color_t red = {255, 0, 0, 255};
+
+       
+        scanline_raster(scene->screen, sp1, sp2, sp3);
+    }
+
 }
 
 void scene_update(scene_t* s, float delta_time) {
@@ -52,34 +195,17 @@ void scene_update(scene_t* s, float delta_time) {
     bbox_triangle_raster(s->screen, p1, p2, p3, green);
     */
 
-    // World to Screen
-    vector3f_t wp1 = {  0,  0, -10 }; //Top
-    vector3f_t wp2 = { -4, -4, -10 }; //Left
-    vector3f_t wp3 = { +4, -4, -10 }; //Right
+    //draw_quad_obj(s);
+    //draw_suzanne_obj(s, delta_time, true);
 
-    vector2i_t sp1 = camera_world_to_screen_point(s->camera, wp1);
-    vector2i_t sp2 = camera_world_to_screen_point(s->camera, wp2);
-    vector2i_t sp3 = camera_world_to_screen_point(s->camera, wp3);
-
-    color_t green = {0, 255, 0, 255};
-    bbox_triangle_raster(s->screen, sp1, sp2, sp3, green);
-
-
-    vector3f_t t2_wp1 = {  2,  0, -15 }; //Top
-    vector3f_t t2_wp2 = { -2, -4, -15 }; //Left
-    vector3f_t t2_wp3 = { +6, -4, -15 }; //Right
-
-    vector2i_t t2_sp1 = camera_world_to_screen_point(s->camera, t2_wp1);
-    vector2i_t t2_sp2 = camera_world_to_screen_point(s->camera, t2_wp2);
-    vector2i_t t2_sp3 = camera_world_to_screen_point(s->camera, t2_wp3);
-
-    color_t red = {255, 0, 0, 255};
-    bbox_triangle_raster(s->screen, t2_sp1, t2_sp2, t2_sp3, red);
+    draw_suzanne_obj_scanline(s, delta_time);
 
     screen_blit(s->screen);
 }
 
 void scene_destroy(scene_t* s) {
     screen_free(s->screen);
+    obj_parse_destroy(s->quad);
+    obj_parse_destroy(s->suzanne);
     free(s);
 }
