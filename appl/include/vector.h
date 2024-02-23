@@ -7,6 +7,12 @@ typedef struct vector2i_t
     int y;
 } vector2i_t;
 
+typedef struct vector2f_t 
+{
+    float x;
+    float y;
+} vector2f_t;
+
 typedef struct vector3f_t 
 {
     float x;

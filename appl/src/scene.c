@@ -8,6 +8,7 @@
 #include "triangle_raster.h"
 #include "camera.h"
 #include "scanline_raster.h"
+#include "SDL_image.h"
 
 scene_t* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
     scene_t* scene = (scene_t*)malloc(sizeof(scene_t));
@@ -17,6 +18,10 @@ scene_t* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
 
     scene->quad = obj_parse("bin\\appl\\resources\\quad.obj");
     scene->suzanne = obj_parse("bin\\appl\\resources\\suzanne.obj");
+    scene->smile_tex = texture_load("bin\\appl\\resources\\smile.png");
+
+    scene->trup = obj_parse("bin\\appl\\resources\\stormtrooper.obj");
+    scene->trup_tex = texture_load("bin\\appl\\resources\\stormtrooper.png");
     return scene;
 }
 
@@ -130,6 +135,9 @@ static void draw_suzanne_obj_scanline(scene_t* scene, float delta_time) {
 
     rotation += 2.f * delta_time;
 
+    gpu_t gpu;
+    gpu.screen = scene->screen;
+
     for(size_t i=0; i < obj->triangle_count; ++i) { 
         vector3f_t wp1 = *(vector3f_t*)&(obj->triangles[i].v1.position);
         vector3f_t wp2 = *(vector3f_t*)&(obj->triangles[i].v2.position);
@@ -174,9 +182,138 @@ static void draw_suzanne_obj_scanline(scene_t* scene, float delta_time) {
         v3.color = &blue;
         v3.z_pos = cp3.z;
        
-        scanline_raster(scene->screen, &v1, &v2, &v3);
+        scanline_raster(&gpu, &v1, &v2, &v3);
     }
 
+}
+
+
+static void draw_quad_obj_scanline(scene_t* scene, float delta_time) {
+
+    obj_t* obj = scene->quad;
+
+    vector3f_t transl = (vector3f_t){0, 0, 5};
+    
+    static float rotation = 0.f;
+
+    //rotation += 2.f * delta_time;
+
+    gpu_t gpu;
+    gpu.texture = scene->smile_tex;
+    gpu.screen = scene->screen;
+    gpu.flags = GPU_FLAG_TEXTURE_MODE;
+
+    for(size_t i=0; i < obj->triangle_count; ++i) { 
+        vector3f_t wp1 = *(vector3f_t*)&(obj->triangles[i].v1.position);
+        vector3f_t wp2 = *(vector3f_t*)&(obj->triangles[i].v2.position);
+        vector3f_t wp3 = *(vector3f_t*)&(obj->triangles[i].v3.position);
+
+        wp1 = vector3f_mult(wp1, 2);
+        wp2 = vector3f_mult(wp2, 2);
+        wp3 = vector3f_mult(wp3, 2);
+
+        wp1 = vector3f_rotate_y(wp1, rotation);
+        wp2 = vector3f_rotate_y(wp2, rotation);
+        wp3 = vector3f_rotate_y(wp3, rotation);
+        
+        wp1 = vector3f_sub(wp1, transl);
+        wp2 = vector3f_sub(wp2, transl);
+        wp3 = vector3f_sub(wp3, transl);
+        
+        vector2i_t sp1 = camera_world_to_screen_point(scene->camera, wp1);
+        vector2i_t sp2 = camera_world_to_screen_point(scene->camera, wp2);
+        vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
+
+        vector3f_t cp1 = camera_world_to_camera_space(scene->camera, wp1);
+        vector3f_t cp2 = camera_world_to_camera_space(scene->camera, wp2);
+        vector3f_t cp3 = camera_world_to_camera_space(scene->camera, wp3);
+
+
+        color_t red = {255, 0, 0, 255};
+        color_t green = {0, 255, 0, 255};
+        color_t blue = {0, 0, 255, 255};
+
+
+        vertex_t v1;
+        v1.screen_pos = &sp1;
+        v1.text_coord = (vector2f_t*)&(obj->triangles[i].v1.uv);
+        v1.z_pos = cp1.z;
+        v1.color = &red;
+
+        vertex_t v2;
+        v2.screen_pos = &sp2;
+        v2.text_coord = (vector2f_t*)&(obj->triangles[i].v2.uv);
+        v2.z_pos = cp2.z;
+        v2.color = &blue;
+
+        vertex_t v3;
+        v3.screen_pos = &sp3;
+        v3.text_coord = (vector2f_t*)&(obj->triangles[i].v3.uv);
+        v3.z_pos = cp3.z;
+        v3.color = &green;
+
+        scanline_raster(&gpu, &v1, &v2, &v3);
+    }
+
+}
+
+
+static void draw_trup_obj_scanline(scene_t* scene, float delta_time) { 
+    obj_t* obj = scene->trup;
+
+    vector3f_t transl = (vector3f_t){0, 4, 8};
+    
+    static float rotation = 0.f;
+
+    rotation += 2.f * delta_time;
+
+    gpu_t gpu;
+    gpu.screen = scene->screen;
+    gpu.flags = GPU_FLAG_TEXTURE_MODE;
+    gpu.texture = scene->trup_tex;
+
+    for(size_t i=0; i < obj->triangle_count; ++i) { 
+        vector3f_t wp1 = *(vector3f_t*)&(obj->triangles[i].v1.position);
+        vector3f_t wp2 = *(vector3f_t*)&(obj->triangles[i].v2.position);
+        vector3f_t wp3 = *(vector3f_t*)&(obj->triangles[i].v3.position);
+
+        wp1 = vector3f_mult(wp1, 2);
+        wp2 = vector3f_mult(wp2, 2);
+        wp3 = vector3f_mult(wp3, 2);
+
+        wp1 = vector3f_rotate_y(wp1, rotation);
+        wp2 = vector3f_rotate_y(wp2, rotation);
+        wp3 = vector3f_rotate_y(wp3, rotation);
+        
+        wp1 = vector3f_sub(wp1, transl);
+        wp2 = vector3f_sub(wp2, transl);
+        wp3 = vector3f_sub(wp3, transl);
+        
+        vector2i_t sp1 = camera_world_to_screen_point(scene->camera, wp1);
+        vector2i_t sp2 = camera_world_to_screen_point(scene->camera, wp2);
+        vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
+
+        vector3f_t cp1 = camera_world_to_camera_space(scene->camera, wp1);
+        vector3f_t cp2 = camera_world_to_camera_space(scene->camera, wp2);
+        vector3f_t cp3 = camera_world_to_camera_space(scene->camera, wp3);
+
+        vertex_t v1;
+        v1.screen_pos = &sp1;
+        v1.text_coord = (vector2f_t*)&(obj->triangles[i].v1.uv);
+        v1.z_pos = cp1.z;
+
+        vertex_t v2;
+        v2.screen_pos = &sp2;
+        v2.text_coord = (vector2f_t*)&(obj->triangles[i].v2.uv);
+        v2.z_pos = cp2.z;
+
+        vertex_t v3;
+        v3.screen_pos = &sp3;
+        v3.text_coord = (vector2f_t*)&(obj->triangles[i].v3.uv);
+        v3.z_pos = cp3.z;
+       
+        scanline_raster(&gpu, &v1, &v2, &v3);
+    }
 }
 
 void scene_update(scene_t* s, float delta_time) {
@@ -218,14 +355,20 @@ void scene_update(scene_t* s, float delta_time) {
     //draw_quad_obj(s);
     //draw_suzanne_obj(s, delta_time, true);
 
-    draw_suzanne_obj_scanline(s, delta_time);
+    //draw_suzanne_obj_scanline(s, delta_time);
+    //draw_quad_obj_scanline(s, delta_time);
+    draw_trup_obj_scanline(s, delta_time);
 
     screen_blit(s->screen);
 }
+
 
 void scene_destroy(scene_t* s) {
     screen_free(s->screen);
     obj_parse_destroy(s->quad);
     obj_parse_destroy(s->suzanne);
+    texture_free(s->smile_tex);
+    obj_parse_destroy(s->trup);
+    texture_free(s->trup_tex);
     free(s);
 }
