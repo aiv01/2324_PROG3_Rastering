@@ -15,5 +15,6 @@ camera_t* camera_new(float vertical_fov, int width, int height);
 void camera_free(camera_t* camera);
 
 vector2i_t camera_world_to_screen_point(camera_t* camera, vector3f_t wp);
+vector3f_t camera_world_to_camera_space(camera_t* camera, vector3f_t wp);
 
 #endif //CAMERA_H

@@ -19,6 +19,13 @@ void camera_free(camera_t* camera)
     free(camera);
 }
 
+vector3f_t camera_world_to_camera_space(camera_t* camera, vector3f_t wp) 
+{
+    vector3f_t camera_point = vector3f_sub(wp, camera->position);
+    return camera_point;
+}
+
+
 vector2i_t camera_world_to_screen_point(camera_t* camera, vector3f_t wp)
 {
     vector3f_t camera_point = vector3f_sub(wp, camera->position);

@@ -152,9 +152,29 @@ static void draw_suzanne_obj_scanline(scene_t* scene, float delta_time) {
         vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
 
         color_t red = {255, 0, 0, 255};
+        color_t green = {0, 255, 0, 255};
+        color_t blue = {0, 0, 255, 255};
 
+        vector3f_t cp1 = camera_world_to_camera_space(scene->camera, wp1);
+        vector3f_t cp2 = camera_world_to_camera_space(scene->camera, wp2);
+        vector3f_t cp3 = camera_world_to_camera_space(scene->camera, wp3);
+
+        vertex_t v1;
+        v1.screen_pos = &sp1;
+        v1.color = &red;
+        v1.z_pos = cp1.z;
+
+        vertex_t v2;
+        v2.screen_pos = &sp2;
+        v2.color = &green;
+        v2.z_pos = cp2.z;
+
+        vertex_t v3;
+        v3.screen_pos = &sp3;
+        v3.color = &blue;
+        v3.z_pos = cp3.z;
        
-        scanline_raster(scene->screen, sp1, sp2, sp3);
+        scanline_raster(scene->screen, &v1, &v2, &v3);
     }
 
 }
