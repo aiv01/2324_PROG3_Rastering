@@ -10,6 +10,9 @@ typedef struct {
     color_t* color;
     float z_pos;
     vector2f_t* text_coord;
+    vector3f_t* world_pos;
+    vector3f_t* world_norm;
+
 } vertex_t;
 
 typedef enum {
@@ -22,6 +25,8 @@ typedef struct {
     screen_t* screen;
     texture_t* texture;
     gpu_flags_e flags;
+    vector3f_t point_light_pos;
+    vector3f_t camera_pos;
 } gpu_t;
 
 void scanline_raster(gpu_t* gpu, vertex_t* v1, vertex_t* v2, vertex_t* v3);

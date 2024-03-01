@@ -2,6 +2,7 @@
 #include "color.h"
 #include <float.h>
 
+
 static void _sort_by_y(vertex_t** op1, vertex_t** op2, vertex_t** op3) 
 {   
     vertex_t* temp;
@@ -24,6 +25,12 @@ static void _sort_by_y(vertex_t** op1, vertex_t** op2, vertex_t** op3)
     }
 }
 
+static float clampf(float value, float min, float max) {
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
+}
+
 
 static float _interpolate_scalar(float value_a, float value_b, float gradient) {
     return  value_a + (value_b - value_a) * gradient;         
@@ -42,6 +49,14 @@ static vector2f_t _interpolate_vector2f(vector2f_t* v_a, vector2f_t* v_b, float 
     vector2f_t result;
     result.x = _interpolate_scalar(v_a->x, v_b->x, gradient);
     result.y = _interpolate_scalar(v_a->y, v_b->y, gradient);
+    return result;
+}
+
+static vector3f_t _interpolate_vector3f(vector3f_t* v_a, vector3f_t* v_b, float gradient) {
+    vector3f_t result;
+    result.x = _interpolate_scalar(v_a->x, v_b->x, gradient);
+    result.y = _interpolate_scalar(v_a->y, v_b->y, gradient);
+    result.z = _interpolate_scalar(v_a->z, v_b->z, gradient);
     return result;
 }
 
@@ -86,6 +101,12 @@ static void _interpolate_row(gpu_t* gpu, int y, vertex_t* left_edge_v1, vertex_t
         right_uv = _interpolate_vector2f(right_edge_v1->text_coord, right_edge_v2->text_coord, right_gradient_y);
     }
 
+    vector3f_t left_world_pos = _interpolate_vector3f(left_edge_v1->world_pos, left_edge_v2->world_pos, left_gradient_y);
+    vector3f_t right_world_pos = _interpolate_vector3f(right_edge_v1->world_pos, right_edge_v2->world_pos, right_gradient_y);
+
+    vector3f_t left_world_norm = _interpolate_vector3f(left_edge_v1->world_norm, left_edge_v2->world_norm, left_gradient_y);
+    vector3f_t right_world_norm = _interpolate_vector3f(right_edge_v1->world_norm, right_edge_v2->world_norm, right_gradient_y);
+
     for(int x = left_x; x <= right_x; ++x) 
     {
         float gradient_x = 1.f;
@@ -116,7 +137,44 @@ static void _interpolate_row(gpu_t* gpu, int y, vertex_t* left_edge_v1, vertex_t
             sampled_color.a = tex->data[tex_index + 3];
         }
 
-        screen_put_pixel_with_depth(gpu->screen, x, y, sample_z, sampled_color);
+        //Compute Phong
+
+        //1. Ambient
+        float ambient_intensity = 0.1f;
+        color_t ambient = color_mult(&sampled_color, ambient_intensity);
+
+        //2. Diffuse
+        vector3f_t world_pos = _interpolate_vector3f(&left_world_pos, &right_world_pos, gradient_x);
+        vector3f_t dir_to_light = vector3f_sub(gpu->point_light_pos, world_pos);
+        dir_to_light = vector3f_norm(&dir_to_light);
+
+        vector3f_t world_norm = _interpolate_vector3f(&left_world_norm, &right_world_norm, gradient_x);
+        world_norm = vector3f_norm(&world_norm);
+
+        float cosLN = vector3f_dot(&dir_to_light, &world_norm);
+        float lambert = clampf(cosLN, 0.f, 1.f);
+        color_t diffuse = color_mult(&sampled_color, lambert);
+
+        //3. Specular
+        vector3f_t dir_to_eye = vector3f_sub(gpu->camera_pos, world_pos);
+        dir_to_eye = vector3f_norm(&dir_to_eye);
+
+        vector3f_t dir_light_to_point = vector3f_mult(dir_to_light, -1.f);
+        vector3f_t dir_to_light_refl = vector3f_refl(&dir_light_to_point, &world_norm);
+        float cosER = vector3f_dot(&dir_to_light_refl, &dir_to_eye);
+        float specular_value = clampf(cosER, 0.f, 1.f);
+
+        color_t specular_color = (color_t){255, 255, 255, 255};
+        color_t specular = color_mult(&specular_color, powf(specular_value, 50.f));
+
+        color_t phong = (color_t){0, 0, 0, 0};
+        phong = color_add(&phong, &ambient);
+        phong = color_add(&phong, &diffuse);
+        phong = color_add(&phong, &specular);
+
+        phong = color_clamp(&phong);
+
+        screen_put_pixel_with_depth(gpu->screen, x, y, sample_z, phong);
     }
 }
 

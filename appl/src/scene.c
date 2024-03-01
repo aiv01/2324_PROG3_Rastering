@@ -187,7 +187,6 @@ static void draw_suzanne_obj_scanline(scene_t* scene, float delta_time) {
 
 }
 
-
 static void draw_quad_obj_scanline(scene_t* scene, float delta_time) {
 
     obj_t* obj = scene->quad;
@@ -257,7 +256,6 @@ static void draw_quad_obj_scanline(scene_t* scene, float delta_time) {
 
 }
 
-
 static void draw_trup_obj_scanline(scene_t* scene, float delta_time) { 
     obj_t* obj = scene->trup;
 
@@ -265,14 +263,18 @@ static void draw_trup_obj_scanline(scene_t* scene, float delta_time) {
     
     static float rotation = 0.f;
 
-    rotation += 2.f * delta_time;
+    rotation += 10.f * delta_time;
 
     gpu_t gpu;
     gpu.screen = scene->screen;
     gpu.flags = GPU_FLAG_TEXTURE_MODE;
     gpu.texture = scene->trup_tex;
+    gpu.point_light_pos = (vector3f_t){4, 0, -8};
+    gpu.camera_pos = scene->camera->position;
 
     for(size_t i=0; i < obj->triangle_count; ++i) { 
+
+        //World Position
         vector3f_t wp1 = *(vector3f_t*)&(obj->triangles[i].v1.position);
         vector3f_t wp2 = *(vector3f_t*)&(obj->triangles[i].v2.position);
         vector3f_t wp3 = *(vector3f_t*)&(obj->triangles[i].v3.position);
@@ -289,10 +291,21 @@ static void draw_trup_obj_scanline(scene_t* scene, float delta_time) {
         wp2 = vector3f_sub(wp2, transl);
         wp3 = vector3f_sub(wp3, transl);
         
+        //World Nromal
+        vector3f_t wn1 = *(vector3f_t*)&(obj->triangles[i].v1.normal);
+        vector3f_t wn2 = *(vector3f_t*)&(obj->triangles[i].v2.normal);
+        vector3f_t wn3 = *(vector3f_t*)&(obj->triangles[i].v3.normal);
+
+        wn1 = vector3f_rotate_y(wn1, rotation);
+        wn2 = vector3f_rotate_y(wn2, rotation);
+        wn3 = vector3f_rotate_y(wn3, rotation);
+
+        // Screen Points
         vector2i_t sp1 = camera_world_to_screen_point(scene->camera, wp1);
         vector2i_t sp2 = camera_world_to_screen_point(scene->camera, wp2);
         vector2i_t sp3 = camera_world_to_screen_point(scene->camera, wp3);
 
+        // Camera Points
         vector3f_t cp1 = camera_world_to_camera_space(scene->camera, wp1);
         vector3f_t cp2 = camera_world_to_camera_space(scene->camera, wp2);
         vector3f_t cp3 = camera_world_to_camera_space(scene->camera, wp3);
@@ -301,16 +314,22 @@ static void draw_trup_obj_scanline(scene_t* scene, float delta_time) {
         v1.screen_pos = &sp1;
         v1.text_coord = (vector2f_t*)&(obj->triangles[i].v1.uv);
         v1.z_pos = cp1.z;
+        v1.world_pos = &wp1;
+        v1.world_norm = &wn1;
 
         vertex_t v2;
         v2.screen_pos = &sp2;
         v2.text_coord = (vector2f_t*)&(obj->triangles[i].v2.uv);
         v2.z_pos = cp2.z;
+        v2.world_pos = &wp2;
+        v2.world_norm = &wn2;
 
         vertex_t v3;
         v3.screen_pos = &sp3;
         v3.text_coord = (vector2f_t*)&(obj->triangles[i].v3.uv);
         v3.z_pos = cp3.z;
+        v3.world_pos = &wp3;
+        v3.world_norm = &wn3;
        
         scanline_raster(&gpu, &v1, &v2, &v3);
     }
@@ -318,7 +337,9 @@ static void draw_trup_obj_scanline(scene_t* scene, float delta_time) {
 
 void scene_update(scene_t* s, float delta_time) {
 
-    screen_clear(s->screen);
+    //screen_clear(s->screen);
+    static color_t clear_color = (color_t){128, 128, 128, 255};
+    screen_clear_color(s->screen, clear_color);
 
     //Directly drawing pixels
     /*
