@@ -259,7 +259,7 @@ static void draw_quad_obj_scanline(scene_t* scene, float delta_time) {
 static void draw_trup_obj_scanline(scene_t* scene, float delta_time) { 
     obj_t* obj = scene->trup;
 
-    vector3f_t transl = (vector3f_t){0, 4, 8};
+    vector3f_t transl = (vector3f_t){0, 0, 8};
     
     static float rotation = 0.f;
 
@@ -309,6 +309,10 @@ static void draw_trup_obj_scanline(scene_t* scene, float delta_time) {
         vector3f_t cp1 = camera_world_to_camera_space(scene->camera, wp1);
         vector3f_t cp2 = camera_world_to_camera_space(scene->camera, wp2);
         vector3f_t cp3 = camera_world_to_camera_space(scene->camera, wp3);
+
+        if (!camera_is_triangle_in_frustum_simple(scene->camera, &sp1, &sp2, &sp3)) continue;
+        if (!camera_is_triangle_facing_camera(scene->camera, &cp1, &cp2, &cp3)) continue;
+
 
         vertex_t v1;
         v1.screen_pos = &sp1;

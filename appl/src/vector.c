@@ -61,3 +61,18 @@ vector3f_t vector3f_refl(vector3f_t* i, vector3f_t* n)
     vector3f_t dot2n = vector3f_mult(*n, dot2);
     return vector3f_sub(*i, dot2n);
 }
+
+/*
+cx = a->y * b->z - a->z * b->y;
+cy = a->z * b->x - a->x * b->z;
+cz = a->x * b->y - a->y * b->x;
+
+*/
+vector3f_t vector3f_cross(vector3f_t* v1, vector3f_t* v2)
+{
+    vector3f_t cross;
+    cross.x = v1->y * v2->z - v1->z * v2->y;
+    cross.y = v1->z * v2->x - v1->x * v2->z;
+    cross.z = v1->x * v2->y - v1->y * v2->x;
+    return cross;
+}
